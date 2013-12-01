@@ -25,11 +25,7 @@
 class Particle {
 public:
 	//Particle constructor:
-  Particle(float _mass, vector<float> _pos, vector<float> _velocity) {
-  	mass = _mass;
-  	pos = _pos;
-  	vel = _velocity; //velocity will not be needed if we go with Verlet integration
-  }
+	Particle(float _mass, vector<float> _pos, vector<float> _velocity);
 
 
 private:
