@@ -25,14 +25,14 @@
 class Particle {
 public:
 	//Particle constructor:
-	Particle(float _mass, vector<float> _pos, vector<float> _velocity);
+	Particle(float _mass, std::vector<float> _pos, std::vector<float> _velocity);
 
 
 private:
-	vector<Particle> linkedParticles;
+	std::vector<Particle> linkedParticles;
 	bool canMove;
 	float mass;
-	vector<float>  pos, oldPos, vel;
+	std::vector<float>  pos, oldPos, vel;
 };
 
 /** Particle system, sets up system of particle linking. */
