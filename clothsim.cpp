@@ -1,23 +1,31 @@
 #include "clothsim.h"
+
+
 /*NOTES FOR OTHER TEAM MEMBERS
 	1. Need to move shit to a header.
 
 */
 
 /*GLOBAL VARIABLES*/
-std::vector<Particle> particleVector;
 
-Particle(){
+
+std::vector<Particle> particleVector;
+int numParticles;
+
+
+
+Particle::Particle()
+{
 	return;
 }
 
-Particle(float _mass, vector<float> _pos, vector<float> _velocity) {
+Particle::Particle(float _mass, std::vector<float> _pos, std::vector<float> _velocity) {
   	mass = _mass;
   	pos = _pos;
   	vel = _velocity; //velocity will not be needed if we go with Verlet integration
 }
 
-ParticleSystem()
+ParticleSystem::ParticleSystem()
 {
 	return;
 }
@@ -40,10 +48,10 @@ void evalForce(){
 
 }
 
-class Sphere
+Sphere::Sphere()
 {
 
-};
+}
 /* NOTES/THINGS TO CONSIDER
 
 - for the particle numerical integration, we were thinking about doing either Euler or Verlet,
@@ -63,6 +71,5 @@ void initializeCloth()
 		Particle currParticle();
 		particleVector.push_back(currParticle);
 		
-		
-
+	}
 }
