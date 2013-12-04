@@ -63,12 +63,11 @@ we're thinking about going with having a system that can work with an number of 
 
 */
 
-void initializeCloth() 
-{
-	for (int i=0; i<numParticles; i++)
+void initializeCloth(){
+	for (int i=0; i < numParticles; i++)
 	{
 		//initialize a new particle and add it to the vector
-		Particle currParticle();
+		Particle currParticle;
 		particleVector.push_back(currParticle);
 		
 	}

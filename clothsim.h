@@ -61,10 +61,6 @@ class Sphere
 
 
 //Functions
-<<<<<<< HEAD
-=======
-
->>>>>>> 2af17540fe8cba4271211896f287b61355aebaa5
 void evalForce();
 void initializeCloth();
 
