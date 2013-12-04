@@ -22,10 +22,11 @@
 #include <math.h>
 
 /** Particle class definition. Defines a particle with a mass, position, and velocity attributes. */
-class Particle 
+class Particle
 {
 public:
 	//Particle constructor:
+	Particle();
 	Particle(float _mass, std::vector<float> _pos, std::vector<float> _velocity);
 
 
@@ -55,12 +56,12 @@ private:
 
 class Sphere
 {
-
+	Sphere();
 };
 
 
 //Functions
 
-void evalForce;
-void initializeCloth;
+void evalForce();
+void initializeCloth();
 
