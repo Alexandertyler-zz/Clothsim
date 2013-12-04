@@ -58,7 +58,6 @@ class Sphere
 
 
 //Functions
-
-void evalForce;
-void initializeCloth;
+void evalForce();
+void initializeCloth();
 

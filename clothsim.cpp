@@ -7,8 +7,7 @@
 /*GLOBAL VARIABLES*/
 std::vector<Particle> particleVector;
 
-Particle()
-{
+Particle(){
 	return;
 }
 
