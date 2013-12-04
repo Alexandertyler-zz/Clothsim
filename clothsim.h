@@ -22,7 +22,8 @@
 #include <math.h>
 
 /** Particle class definition. Defines a particle with a mass, position, and velocity attributes. */
-class Particle {
+class Particle 
+{
 public:
 	//Particle constructor:
 	Particle(float _mass, vector<float> _pos, vector<float> _velocity);
@@ -38,7 +39,8 @@ private:
 /** Particle system, sets up system of particle linking. */
 //cloth
 
-class ParticleSystem {
+class ParticleSystem
+{
 public:
 	ParticleSystem();
 	
