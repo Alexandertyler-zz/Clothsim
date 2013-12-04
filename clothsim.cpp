@@ -5,7 +5,7 @@
 */
 
 /*GLOBAL VARIABLES*/
-vector<Particle> particleVector;
+std::vector<Particle> particleVector;
 
 Particle()
 {
