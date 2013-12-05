@@ -10,9 +10,13 @@
 
 
 std::vector<Particle> particleVector;
-int numParticles;
-glm::vec3 gravity;
-float damp;
+int particleSide = 10;
+int numParticles = particleSide*particleSide;
+int clothSize = 100;
+glm::vec3 gravity = [0;
+float damp = .1;
+float timeStep = .5*.5;
+int constraintIter = 15;
 
 Particle::Particle()
 {
@@ -36,13 +40,12 @@ void Particle::evalForce()
 	//vertlet integration
 	glm::vec3 tmp;
 	tmp = pos;
-	pos = (pos-oldPos)*(1.0f*damp) + accel;
+	pos = (pos-oldPos)*(1.0f*damp) + accel*timeStep;
 	oldPos = tmp; 
 }
 
 ParticleSystem::ParticleSystem()
 {
-	
 	return;
 }
 
@@ -52,7 +55,7 @@ ParticleSystem::ParticleSystem()
 
 Sphere::Sphere()
 {
-
+	
 }
 
 Constraint::Constraint()
@@ -62,7 +65,7 @@ Constraint::Constraint()
 
 Constraint::makeConstraint(Particle part1, Particle part2)
 {
-
+	
 }
 
 Constraint::evalConstraint()
