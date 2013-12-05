@@ -17,7 +17,7 @@ Particle::Particle()
 	return;
 }
 
-Particle::Particle(float _mass, std::vector<float> _pos, std::vector<float> _velocity) {
+Particle::Particle(float _mass, glm::vec3 _pos, glm::vec3 _velocity) {
   	mass = _mass;
   	pos = _pos;
   	vel = _velocity; //velocity will not be needed if we go with Verlet integration
@@ -25,6 +25,7 @@ Particle::Particle(float _mass, std::vector<float> _pos, std::vector<float> _vel
 
 ParticleSystem::ParticleSystem()
 {
+	
 	return;
 }
 
@@ -70,4 +71,9 @@ void initializeCloth()
 		particleVector.push_back(currParticle);
 		
 	}
+}
+
+int main(int argc, char *argv[])
+{
+	return 1;
 }
