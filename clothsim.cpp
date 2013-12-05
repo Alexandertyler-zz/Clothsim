@@ -10,13 +10,16 @@
 
 
 std::vector<Particle> particleVector;
-int particleSide = 10;
+float particleSide = 10.0f;
 int numParticles = particleSide*particleSide;
-int clothSize = 100;
-glm::vec3 gravity = [0;
-float damp = .1;
-float timeStep = .5*.5;
-int constraintIter = 15;
+float clothSide = 10.0f;
+glm::vec3 gravity = 0;
+float damp = .1f;
+float timeStep = .5f*.5f;
+
+float structConstraint = clothSide/(particleSide-1.0f);
+float shearConstraint = sqrt(2.0f*pow(structConstraint, 2));
+float bendConstraint = 2.0f*structConstraint;
 
 Particle::Particle()
 {
