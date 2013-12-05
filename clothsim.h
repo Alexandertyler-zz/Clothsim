@@ -6,6 +6,7 @@
 #include <fstream>
 #include <stdio.h>
 #include <stdlib.h>
+#include "glm.hpp"
 
 #include <sys/time.h>
 
@@ -27,14 +28,14 @@ class Particle
 public:
 	//Particle constructor:
 	Particle();
-	Particle(float _mass, std::vector<float> _pos, std::vector<float> _velocity);
+	Particle(float _mass, glm::vec3 _pos, glm::vec3 _velocity);
 
 
 private:
 	std::vector<Particle> linkedParticles;
 	bool canMove;
 	float mass;
-	std::vector<float>  pos, oldPos, vel;
+	glm::vec3  pos, oldPos, vel;
 };
 
 /** Particle system, sets up system of particle linking. */
