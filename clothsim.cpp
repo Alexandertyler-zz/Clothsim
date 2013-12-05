@@ -17,10 +17,17 @@ Particle::Particle()
 	return;
 }
 
-Particle::Particle(float _mass, glm::vec3 _pos, glm::vec3 _velocity) {
+Particle::Particle(float _mass, glm::vec3 _pos) {
   	mass = _mass;
   	pos = _pos;
-  	vel = _velocity; //velocity will not be needed if we go with Verlet integration
+}
+
+//evaluate the force acting on each particle
+Particle::evalForce(){
+	//pseudocode:
+	//foreach particle, add the gravity force
+	//foreach triangle in the cloth plane, calculate and add the wind
+	//foreach spring, calculate and add in spring force to particles
 }
 
 ParticleSystem::ParticleSystem()
@@ -32,20 +39,6 @@ ParticleSystem::ParticleSystem()
 //we should do an evalForce function in each class for the different objects. Makes it 
 //more specialized that way.
 
-
-
-
-//evaluate the force acting on each particle
-void evalForce(){
-	//pseudocode:
-	
-	
-
-	//foreach particle, add the gravity force
-	//foreach triangle in the cloth plane, calculate and add the wind
-	//foreach spring, calculate and add in spring force to particles
-
-}
 
 Sphere::Sphere()
 {
