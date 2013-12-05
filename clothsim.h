@@ -28,14 +28,16 @@ class Particle
 public:
 	//Particle constructor:
 	Particle();
-	Particle(float _mass, glm::vec3 _pos, glm::vec3 _velocity);
+	Particle(float _mass, glm::vec3 _pos);
+	void evalForce(glm::vec3 _force);
+  void changePos(glm::vec3 p);
 
 
 private:
-	std::vector<Particle> linkedParticles;
 	bool canMove;
 	float mass;
-	glm::vec3  pos, oldPos, vel;
+	glm::vec3  pos, oldPos, vel, accel;
+	
 };
 
 /** Particle system, sets up system of particle linking. */
@@ -61,7 +63,19 @@ class Sphere
 };
 
 
-//Functions
-void evalForce();
-void initializeCloth();
 
+class Constraint
+{
+public:
+	void makeConstraint(Particle part1, Particle part2);
+	void evalConstraint();	
+	
+private:
+	Particle part1, part2;
+	
+};
+
+
+
+//Functions
+void initializeCloth();
