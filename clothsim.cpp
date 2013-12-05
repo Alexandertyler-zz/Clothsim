@@ -97,9 +97,11 @@ Constraint::evalConstraint()
 	//the distance between particle1 and particle2
 	float dist = glm::length(vec12); 
 	//getting the difference between the particle1's distance from particle2, with the structConstraint/resting distance.
-	glm::vec3 difference = vec12 * (1 - structConstraint/dist);
+	glm::vec3 structDifference = vec12 * (1 - structConstraint/dist);
+	glm::vec3 shearDifference = vec12 * (1 - shearConstraint/dist); //? do we need to do these?
+	glm::vec3 bendDifference = vec12 * (1 - bendConstraint/dist); //?
 	//The distance each particle must move to satisfy the the structConstraint length:
-	glm::vec3 distToMove = (difference/2);
+	glm::vec3 distToMove = (structDifference/2);
 	//Moving particle1's position to the correct resting length, structConstraint
 	part1.changePos(distToMove);
 	//Moving particle2's position to the correct resting length, but in the NEGATIVE direction
