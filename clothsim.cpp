@@ -11,23 +11,33 @@
 
 std::vector<Particle> particleVector;
 int numParticles;
+glm::vec3 gravity;
+float damp;
 
 Particle::Particle()
 {
 	return;
 }
 
-Particle::Particle(float _mass, glm::vec3 _pos) {
+Particle::Particle(float _mass, glm::vec3 _pos)
+{
   	mass = _mass;
   	pos = _pos;
 }
 
 //evaluate the force acting on each particle
-Particle::evalForce(){
+void Particle::evalForce()
+{
 	//pseudocode:
 	//foreach particle, add the gravity force
 	//foreach triangle in the cloth plane, calculate and add the wind
 	//foreach spring, calculate and add in spring force to particles
+	pos = pos + gravity;
+	//vertlet integration
+	glm::vec3 tmp;
+	tmp = pos;
+	pos = (pos-oldPos)*(1.0f*damp) + accel;
+	oldPos = tmp; 
 }
 
 ParticleSystem::ParticleSystem()
@@ -44,6 +54,24 @@ Sphere::Sphere()
 {
 
 }
+
+Constraint::Constraint()
+{
+
+}
+
+Constraint::makeConstraint(Particle part1, Particle part2)
+{
+
+}
+
+Constraint::evalConstraint()
+{
+
+}
+
+
+
 /* NOTES/THINGS TO CONSIDER
 
 - for the particle numerical integration, we were thinking about doing either Euler or Verlet,

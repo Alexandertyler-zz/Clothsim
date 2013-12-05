@@ -65,12 +65,12 @@ class Constraint
 {
 public:
 	void makeConstraint(Particle part1, Particle part2);
-	void evaluateConstraint();	
+	void evalConstraint();	
 	
 private:
 	Particle part1, part2;
 	
-}
+};
 
 
 
