@@ -75,7 +75,7 @@ void ParticleSystem::initializeConstraints()
 	}
 	else
 	{
-		std::cout << "error here" << std::endl;
+		std::cout << "No Error" << std::endl;
 		for(int i=0; i < particleSide; i++)
 		{
 			for(int j=0; j < particleSide; j++)
@@ -86,6 +86,13 @@ void ParticleSystem::initializeConstraints()
 				{
 					p2 = particleVector[i+1][j];
 					newConstraint(p1, p2);
+					p2 = particleVector[i][j+1];
+					newConstraint(p1, p2);
+				}else if(i != particleSide-1) {
+					p2 = particleVector[i+1][j];
+					newConstrain(p1, p2);
+				}else if(j != particleSide - 1) {
+
 				}
 			}
 		}
