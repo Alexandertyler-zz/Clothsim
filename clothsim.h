@@ -78,3 +78,4 @@ private:
 
 //Functions
 void initializeCloth();
+glm::vec3 getTriangalNormal(Particle part1, Particle part2, Particle part3);

@@ -7,8 +7,6 @@
 */
 
 /*GLOBAL VARIABLES*/
-
-
 std::vector<Particle> particleVector;
 
 float particleSide = 10.0f;
@@ -152,6 +150,16 @@ void initializeCloth(){
 		particleVector.push_back(currParticle);
 		
 	}
+}
+
+//Gets the normal of the triangle created by three particles PART1, PART2, PART3
+glm::vec3 getTriangalNormal(Particle part1, Particle part2, Particle part3) {
+	glm::vec3 v12 = part2.pos - part1.pos;
+	glm::vec3 v13 = part3.pos - part1.pos;
+
+	glm::vec3 crossProd = glm::cross(v12, v13);
+	return crossProd;
+
 }
 
 int main(int argc, char *argv[])
