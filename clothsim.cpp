@@ -14,7 +14,7 @@ std::vector<Particle> particleVector;
 float particleSide = 10.0f;
 int numParticles = particleSide*particleSide;
 float clothSide = 10.0f;
-glm::vec3 gravity = 0;
+glm::vec3 gravity;
 float damp = .1f;
 float timeStep = .5f*.5f;
 
@@ -76,8 +76,7 @@ void ParticleSystem::initializeConstraints()
 {
 	if(sysPartCount != numParticles)
 	{
-		std::cerr << "Particle System count is diff 
-			from global count." << std::endl;
+		std::cerr << "Particle System count is diff from global count." << std::endl;
 	}
 	else 
 	{
@@ -102,7 +101,7 @@ Constraint::Constraint()
 }
 
 //Lizzie: should we be passing in pointers *part1 and *part2? not sure...
-Constraint::makeConstraint(Particle part1, Particle part2)
+void Constraint::makeConstraint(Particle part1, Particle part2)
 {
 
 	// getting the position vector from particle 1's pos - particle 2's pos
@@ -115,7 +114,7 @@ Constraint::makeConstraint(Particle part1, Particle part2)
 }
 
 //Ensures that the structural constraint is satisfied.
-Constraint::evalConstraint()
+void Constraint::evalConstraint()
 {
 	//getting the vector from particle1 to particle2
 	glm::vec3 vec12 = part2.pos - part1.pos;

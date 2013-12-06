@@ -29,9 +29,8 @@ public:
 	//Particle constructor:
 	Particle();
 	Particle(float _mass, glm::vec3 _pos);
-	void evalForce(glm::vec3 _force);
+	void evalForce();
   void changePos(glm::vec3 p);
-
 
 private:
 	bool canMove;
@@ -65,6 +64,7 @@ class Sphere
 class Constraint
 {
 public:
+	Constraint();
 	void makeConstraint(Particle part1, Particle part2);
 	void evalConstraint();	
 	
