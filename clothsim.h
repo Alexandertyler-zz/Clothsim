@@ -80,4 +80,4 @@ private:
 //Functions
 ParticleSystem initializeCloth();
 void newConstraint(Particle part1, Particle part2);
-glm::vec3 getTriangalNormal(Particle part1, Particle part2, Particle part3);
+glm::vec3 getTriangleNormal(Particle part1, Particle part2, Particle part3);
