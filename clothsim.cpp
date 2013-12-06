@@ -2,9 +2,9 @@
 
 
 /*NOTES FOR OTHER TEAM MEMBERS
-
-
-*/
+ 
+ 
+ */
 
 /*GLOBAL VARIABLES*/
 
@@ -45,11 +45,11 @@ void Particle::evalForce()
 	//foreach triangle in the cloth plane, calculate and add the wind
 	//foreach spring, calculate and add in spring force to particles
 	glm::vec3 tmp;
-	tmp = pos;	
+	tmp = pos;
 	pos = pos + gravity;
 	//vertlet integration
 	pos = (pos-oldPos)*(1.0f*damp) + accel*timeStep;
-	oldPos = tmp; 
+	oldPos = tmp;
 }
 
 
@@ -58,12 +58,13 @@ void Particle::changePos(glm::vec3 p)
 	if(canMove){
 		pos += p;
 	}
-
+    
 }
 
 
 
-//we should do an evalForce function in each class for the different objects. Makes it 
+
+//we should do an evalForce function in each class for the different objects. Makes it
 //more specialized that way.
 
 
@@ -82,14 +83,14 @@ Constraint::Constraint()
 //creates a constraint between particle 1 and particle 2
 Constraint::Constraint(Particle _part1, Particle _part2) : part1(_part1), part2(_part2)
 {
-
+    
 	// getting the position vector from particle 1's pos - particle 2's pos
 	glm::vec3 v = part1.pos - part2.pos;
 	//getting the length of the vector
 	float dist = glm::length(v);
 	//setting the structural distance / resting length of the 2 particles
 	structDistance = dist;
-
+    
 }
 
 //Ensures that the structural constraint is satisfied.
@@ -98,7 +99,7 @@ void Constraint::evalConstraint()
 	//getting the vector from particle1 to particle2
 	glm::vec3 vec12 = part2.pos - part1.pos;
 	//the distance between particle1 and particle2
-	float dist = glm::length(vec12); 
+	float dist = glm::length(vec12);
 	//getting the difference between the particle1's distance from particle2, with the structConstraint/resting distance.
 	glm::vec3 structDifference = vec12 * (1 - structDistance/dist);
 	//The distance each particle must move to satisfy the the structConstraint length:
@@ -107,21 +108,21 @@ void Constraint::evalConstraint()
 	part1.changePos(distToMove);
 	//Moving particle2's position to the correct resting length, but in the NEGATIVE direction
 	part2.changePos(-distToMove);
-
+    
 }
 
 
 
 /* NOTES/THINGS TO CONSIDER
-
-- for the particle numerical integration, we were thinking about doing either Euler or Verlet,
-though verlet seems more desirable.
-- should we be thinking about the optimal number of particles?  -> right now,
-we're thinking about going with having a system that can work with an number of particles
-(will use an integer variable, numParticles)
-
-
-*/
+ 
+ - for the particle numerical integration, we were thinking about doing either Euler or Verlet,
+ though verlet seems more desirable.
+ - should we be thinking about the optimal number of particles?  -> right now,
+ we're thinking about going with having a system that can work with an number of particles
+ (will use an integer variable, numParticles)
+ 
+ 
+ */
 
 
 ParticleSystem::ParticleSystem()
@@ -160,6 +161,8 @@ void ParticleSystem::initializeConstraints()
 	return;
 }
 
+
+
 ParticleSystem initializeCloth(){
 	ParticleSystem cloth;
 	for (int x=0; x < particleSide; x++)
@@ -173,7 +176,6 @@ ParticleSystem initializeCloth(){
 			particleVector[x].push_back(currParticle);
 			cloth.sysPartCount += 1;
 		}
-
 	}
 }
 
@@ -183,7 +185,7 @@ glm::vec3 getTriangalNormal(Particle part1, Particle part2, Particle part3) {
 	glm::vec3 v13 = part3.pos - part1.pos;
 	glm::vec3 crossProd = glm::cross(v12, v13);
 	return crossProd;
-
+    
 }
 
 void newConstraint(Particle part1, Particle part2)
@@ -192,16 +194,117 @@ void newConstraint(Particle part1, Particle part2)
 	constraintVector.push_back(constraint);
 }
 
+
+
+
+/*Kristin: NEED TO MOVE FUNCTION WHERE CAN ACCESS PARTICLE POSITIONS
+ POSSIBLY PUT IN PARTICLE CLASS AND CALL FROM EVALCONSTRAINT ON BOTH PARTICLES?
+ void sphereCollision () {
+ //if distance from point to origin of sphere less than radius 2
+ if (sqrt( sqr(pos.x) + sqr(pos.y) + sqr(pos.z) ) < 2) {
+ pos = glm::normalize(pos) * 2; //push position to surface of sphere (if change radius, change 2 to new radius value here)
+ }
+ }
+ */
+
+
+
+
+//FUNCTIONS TO CREATE WINDOW AND RENDER SCENE//
+
+class Viewport {
+public:
+    int w, h; // width and height
+};
+
+Viewport viewport;
+
+void initScene(){
+    
+    GLfloat lmodel_ambient[] = { 0.2, 0.2, 0.2, 1.0 };
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lmodel_ambient);
+    glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+    
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_DEPTH_TEST);
+    
+}
+
+void myReshape(int w, int h) {
+    viewport.w = w;
+    viewport.h = h;
+    
+    glViewport (0,0,viewport.w,viewport.h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(-5, 5, -5, 5, 5, -5);
+    
+}
+
+void myDisplay() {
+    
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    
+    gluLookAt(0, 0, 5,  //look from 0, 0, 5 (along z axis)
+              0, 0, 0,  //look at origin
+              0, 1, 0); //y up vector
+    
+    glutSolidSphere(2, 25, 25); //sphere with center at origin, radius 2
+    
+    glFlush();
+    glutSwapBuffers();
+    
+}
+
+
+//CLOSE WINDOW WITH SPACEBAR//
+void idleInput (unsigned char key, int xmouse, int ymouse) {
+    switch (key)
+    {
+        case ' ':
+            exit(0);
+        default:
+            break;
+    }
+}
+
+
+
+
 int main(int argc, char *argv[])
 {
+    glutInit(&argc, argv);
+    
 	ParticleSystem cloth;
 	cloth = initializeCloth();
 	cloth.initializeConstraints();
 	//timeloop
 	//evalforce
 	//for #of evals:
-		//eval
-		//spherecollision
+    //eval
+    //spherecollision
+    
+    
+    //CREATE WINDOW AND DRAW SCENE
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    // Initalize theviewport size
+    viewport.w = 400;
+    viewport.h = 400;
+    glutInitWindowSize(viewport.w, viewport.h);
+    glutInitWindowPosition(0,0);
+    glutCreateWindow("Cloth Simulation");
+    
+    initScene();
+    
+    glutDisplayFunc(myDisplay);
+    glutReshapeFunc(myReshape);
+    glutKeyboardFunc(idleInput);
+    glutMainLoop();
+    
 	
 	return 1;
 }
