@@ -14,7 +14,7 @@ std::vector<Particle> particleVector;
 float particleSide = 10.0f;
 int numParticles = particleSide*particleSide;
 float clothSide = 10.0f;
-glm::vec3 gravity;
+glm::vec3 gravity(0, 0, 0);
 float damp = .1f;
 float timeStep = .5f*.5f;
 
@@ -100,8 +100,8 @@ Constraint::Constraint()
 
 }
 
-//Lizzie: should we be passing in pointers *part1 and *part2? not sure...
-void Constraint::makeConstraint(Particle part1, Particle part2)
+//Setting the constraint between two particles PART1 and PART2
+void Constraint::setConstraint(Particle part1, Particle part2)
 {
 
 	// getting the position vector from particle 1's pos - particle 2's pos
@@ -110,7 +110,7 @@ void Constraint::makeConstraint(Particle part1, Particle part2)
 	//getting the length of the vector
 	float dist = glm::length(v);
 	//setting the structural constraing / resting length of the 2 particles
-	structConstraint = dist;
+	structDistance = dist;
 }
 
 //Ensures that the structural constraint is satisfied.
@@ -121,11 +121,9 @@ void Constraint::evalConstraint()
 	//the distance between particle1 and particle2
 	float dist = glm::length(vec12); 
 	//getting the difference between the particle1's distance from particle2, with the structConstraint/resting distance.
-	glm::vec3 structDifference = vec12 * (1 - structConstraint/dist);
-	glm::vec3 shearDifference = vec12 * (1 - shearConstraint/dist); //? do we need to do these?
-	glm::vec3 bendDifference = vec12 * (1 - bendConstraint/dist); //?
+	glm::vec3 structDifference = vec12 * (1 - structDistance/dist);
 	//The distance each particle must move to satisfy the the structConstraint length:
-	glm::vec3 distToMove = (structDifference / 2.0f);
+	glm::vec3 distToMove = (structDifference/2.0f);
 	//Moving particle1's position to the correct resting length, structConstraint
 	part1.changePos(distToMove);
 	//Moving particle2's position to the correct resting length, but in the NEGATIVE direction
