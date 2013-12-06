@@ -84,23 +84,20 @@ Sphere::Sphere()
 	
 }
 
-Constraint::Constraint()
-{
+Constraint::Constraint(Particle _part1, Particle _part2)
 
-}
 
-//Setting the constraint between two particles PART1 and PART2
-void Constraint::setConstraint(Particle part1, Particle part2)
-{
-
+	part1(_part1);
+	part2(_part2);
 	// getting the position vector from particle 1's pos - particle 2's pos
 	glm::vec3 v = part1.pos - part2.pos;
-	//float length = sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]); //geting the length of the vector
 	//getting the length of the vector
 	float dist = glm::length(v);
-	//setting the structural constraing / resting length of the 2 particles
+	//setting the structural distance / resting length of the 2 particles
 	structDistance = dist;
+
 }
+
 
 //Ensures that the structural constraint is satisfied.
 void Constraint::evalConstraint()
@@ -148,7 +145,6 @@ ParticleSystem initializeCloth(){
 glm::vec3 getTriangalNormal(Particle part1, Particle part2, Particle part3) {
 	glm::vec3 v12 = part2.pos - part1.pos;
 	glm::vec3 v13 = part3.pos - part1.pos;
-
 	glm::vec3 crossProd = glm::cross(v12, v13);
 	return crossProd;
 

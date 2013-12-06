@@ -63,8 +63,8 @@ class Sphere
 class Constraint
 {
 public:
-	Constraint();
-	void setConstraint(Particle part1, Particle part2);
+	Constraint(Particle _part1, Particle _part2);
+	//void setConstraint(Particle part1, Particle part2);
 	void evalConstraint();	
 	Particle part1, part2;
 	
