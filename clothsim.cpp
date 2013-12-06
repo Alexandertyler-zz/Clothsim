@@ -7,14 +7,14 @@
 */
 
 /*GLOBAL VARIABLES*/
-std::vector<Particle> particleVector;
-
 float particleSide = 10.0f;
 int numParticles = particleSide*particleSide;
 float clothSide = 10.0f;
 glm::vec3 gravity(0, 0, 0);
 float damp = .1f;
 float timeStep = .5f*.5f;
+
+std::vector<std::vector<Particle> > particleVector(particleSide);
 
 float structConstraint = clothSide/(particleSide-1.0f); // lizzie: the rest length between two particles (?)
 float shearConstraint = sqrt(2.0f*pow(structConstraint, 2));
@@ -57,15 +57,6 @@ void Particle::changePos(glm::vec3 p)
 
 ParticleSystem::ParticleSystem()
 {
-	//clear the vector because we are making a new system
-	particleVector.clear();
-	return;
-}
-
-void ParticleSystem::addParticle(Particle part)
-{
-	particleVector.push_back(part);
-	sysPartCount += 1;
 	return;
 }
 
@@ -142,13 +133,14 @@ we're thinking about going with having a system that can work with an number of 
 
 */
 
-void initializeCloth(){
-	for (int i=0; i < numParticles; i++)
+ParticleSystem initializeCloth(){
+	ParticleSystem cloth;
+	for (int i=0; i < clothSide; i++)
 	{
 		//initialize a new particle and add it to the vector	
 		Particle currParticle;
-		particleVector.push_back(currParticle);
-		
+		particleVector[i].push_back(currParticle);
+		cloth.sysPartCount += 1;
 	}
 }
 
@@ -165,13 +157,7 @@ glm::vec3 getTriangalNormal(Particle part1, Particle part2, Particle part3) {
 int main(int argc, char *argv[])
 {
 	ParticleSystem cloth;
-	//loop for particles
-	for(int i=0; i < numParticles; i++)
-	{
-		//Particle part(mass, pos);
-		//cloth.addParticle(part);
-		
-	}
+	cloth = initializeCloth();
 	cloth.initializeConstraints();
 	//timeloop
 	//evalforce

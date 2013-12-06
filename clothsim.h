@@ -48,7 +48,6 @@ public:
 	ParticleSystem();
 	//somehow, set up linking system: iterate through all particles, and link them.
 	//THINK ABOUT HOW TO DO LINKING SYSTEM???
-	void addParticle(Particle part);
 	void initializeConstraints();
 	int sysPartCount;
 };
@@ -77,5 +76,5 @@ private:
 
 
 //Functions
-void initializeCloth();
+ParticleSystem initializeCloth();
 glm::vec3 getTriangalNormal(Particle part1, Particle part2, Particle part3);
