@@ -28,7 +28,7 @@ class Particle
 public:
 	//Particle constructor:
 	Particle();
-	Particle(float _mass, glm::vec3 _pos);
+	Particle(glm::vec3 _pos);
 	void evalForce();
   void changePos(glm::vec3 p);
 

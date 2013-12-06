@@ -29,10 +29,12 @@ Particle::Particle()
 	return;
 }
 
-Particle::Particle(float _mass, glm::vec3 _pos)
+Particle::Particle(glm::vec3 _pos)
 {
-  	mass = _mass;
   	pos = _pos;
+  	mass = 1.0f;
+  	oldPos = _pos;
+  	canMove = true;
 }
 
 //evaluate the force acting on each particle
@@ -59,39 +61,6 @@ void Particle::changePos(glm::vec3 p)
 
 }
 
-ParticleSystem::ParticleSystem()
-{
-	return;
-}
-
-//Use this when system is full to initialize all constraints
-void ParticleSystem::initializeConstraints()
-{
-	if(sysPartCount != numParticles)
-	{
-		std::cerr << "Particle System count is diff from global count." << std::endl;
-	}
-	else 
-	{
-		for(int i=0; i < particleSide; i++)
-		{
-			for(int j=0; j < particleSide; j++)
-			{
-				Particle p1, p2;
-				p1 = particleVector[i][j];
-				if(j != particleSide-1)
-				{
-					p2 = particleVector[i+1][j];
-					newConstraint(p1, p2);
-				}
-			}
-		}
-		//struct loop
-		//bend loop
-		//shear loop
-	}
-	return;
-}
 
 
 //we should do an evalForce function in each class for the different objects. Makes it 
@@ -154,14 +123,57 @@ we're thinking about going with having a system that can work with an number of 
 
 */
 
+
+ParticleSystem::ParticleSystem()
+{
+	return;
+}
+
+//Use this when system is full to initialize all constraints
+void ParticleSystem::initializeConstraints()
+{
+	if(sysPartCount != numParticles)
+	{
+		std::cerr << "Particle System count is diff from global count." << std::endl;
+	}
+	else 
+	{
+		for(int i=0; i < particleSide; i++)
+		{
+			for(int j=0; j < particleSide; j++)
+			{
+				Particle p1, p2;
+				p1 = particleVector[i][j];
+				if(j != particleSide-1)
+				{
+					p2 = particleVector[i+1][j];
+					newConstraint(p1, p2);
+				} else {
+
+				}
+			}
+		}
+		//struct loop
+		//bend loop
+		//shear loop
+	}
+	return;
+}
+
 ParticleSystem initializeCloth(){
 	ParticleSystem cloth;
-	for (int i=0; i < particleSide; i++)
+	for (int x=0; x < particleSide; x++)
 	{
-		//initialize a new particle and add it to the vector	
-		Particle currParticle;
-		particleVector[i].push_back(currParticle);
-		cloth.sysPartCount += 1;
+		for (int y = 0; y < particleSide; y++) {
+			//initialize a new particle and add it to the vector	
+			glm::vec3 particlePos = glm::vec3(clothSide * (x/(float) particleSide),
+								-clothSide * (y/(float) particleSide),
+								0);
+			Particle currParticle(particlePos);
+			particleVector[x].push_back(currParticle);
+			cloth.sysPartCount += 1;
+		}
+
 	}
 }
 
