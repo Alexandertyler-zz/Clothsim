@@ -47,13 +47,11 @@ class ParticleSystem
 {
 public:
 	ParticleSystem();
-	
-	//we should add the particles into a vector when we initialize them. Because
-	//we only have one object utilizing this vector, it shouldn't be a problem.
 	//somehow, set up linking system: iterate through all particles, and link them.
 	//THINK ABOUT HOW TO DO LINKING SYSTEM???
-private:
-	int numParticles;
+	void addParticle(Particle part);
+	void initializeConstraints();
+	int sysPartCount;
 };
 
 

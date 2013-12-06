@@ -2,7 +2,7 @@
 
 
 /*NOTES FOR OTHER TEAM MEMBERS
-	1. Need to move shit to a header.
+
 
 */
 
@@ -10,6 +10,7 @@
 
 
 std::vector<Particle> particleVector;
+
 float particleSide = 10.0f;
 int numParticles = particleSide*particleSide;
 float clothSide = 10.0f;
@@ -58,6 +59,30 @@ void Particle::changePos(glm::vec3 p)
 
 ParticleSystem::ParticleSystem()
 {
+	//clear the vector because we are making a new system
+	particleVector.clear();
+	return;
+}
+
+void ParticleSystem::addParticle(Particle part)
+{
+	particleVector.push_back(part);
+	sysPartCount += 1;
+	return;
+}
+
+//Use this when system is full to initialize all constraints
+void ParticleSystem::initializeConstraints()
+{
+	if(sysPartCount != numParticles)
+	{
+		std::cerr << "Particle System count is diff 
+			from global count." << std::endl;
+	}
+	else 
+	{
+		//for i, j make constraint(particleVector(i), (j));
+	}
 	return;
 }
 
@@ -134,5 +159,14 @@ void initializeCloth(){
 
 int main(int argc, char *argv[])
 {
+	ParticleSystem cloth;
+	//loop for particles
+	for(int i=0; i < numParticles; i++)
+	{
+		//Particle part(mass, pos);
+		//cloth.addParticle(part);
+		
+	}
+	cloth.initializeConstraints();
 	return 1;
 }
