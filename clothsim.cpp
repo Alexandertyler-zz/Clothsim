@@ -15,6 +15,7 @@ float damp = .1f;
 float timeStep = .5f*.5f;
 
 std::vector<std::vector<Particle> > particleVector(particleSide);
+std::vector<Constraint> constraintVector;
 
 float structConstraint = clothSide/(particleSide-1.0f); // lizzie: the rest length between two particles (?)
 float shearConstraint = sqrt(2.0f*pow(structConstraint, 2));
@@ -38,10 +39,10 @@ void Particle::evalForce()
 	//foreach particle, add the gravity force
 	//foreach triangle in the cloth plane, calculate and add the wind
 	//foreach spring, calculate and add in spring force to particles
+	glm::vec3 tmp;
+	tmp = pos;	
 	pos = pos + gravity;
 	//vertlet integration
-	glm::vec3 tmp;
-	tmp = pos;
 	pos = (pos-oldPos)*(1.0f*damp) + accel*timeStep;
 	oldPos = tmp; 
 }
@@ -69,7 +70,22 @@ void ParticleSystem::initializeConstraints()
 	}
 	else 
 	{
-		//for i, j make constraint(particleVector(i), (j));
+		for(int i=0; i < clothSide; i++)
+		{
+			for(int j=0; j < clothSide; j++)
+			{
+				Particle p1, p2;
+				p1 = particleVector[i][j];
+				if(j != clothSide-1)
+				{
+					p2 = [i+1][j];
+					newConstraint(p1, p2);
+				}
+			}
+		}
+		//struct loop
+		//bend loop
+		//shear loop
 	}
 	return;
 }
@@ -84,11 +100,17 @@ Sphere::Sphere()
 	
 }
 
-Constraint::Constraint(Particle _part1, Particle _part2)
 
 
-	part1(_part1);
-	part2(_part2);
+Constraint::Constraint()
+{
+	
+}
+
+//creates a constraint between particle 1 and particle 2
+Constraint::Constraint(Particle _part1, Particle _part2) : part1(_part1), part2(_part2)
+{
+
 	// getting the position vector from particle 1's pos - particle 2's pos
 	glm::vec3 v = part1.pos - part2.pos;
 	//getting the length of the vector
@@ -97,7 +119,6 @@ Constraint::Constraint(Particle _part1, Particle _part2)
 	structDistance = dist;
 
 }
-
 
 //Ensures that the structural constraint is satisfied.
 void Constraint::evalConstraint()
@@ -148,6 +169,12 @@ glm::vec3 getTriangalNormal(Particle part1, Particle part2, Particle part3) {
 	glm::vec3 crossProd = glm::cross(v12, v13);
 	return crossProd;
 
+}
+
+void newConstraint(Particle part1, Particle part2)
+{
+	Constraint constraint(part1, part2);
+	constraintVector.push_back(constraint);
 }
 
 int main(int argc, char *argv[])

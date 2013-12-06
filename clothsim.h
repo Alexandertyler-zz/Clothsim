@@ -63,10 +63,12 @@ class Sphere
 class Constraint
 {
 public:
+	Particle part1, part2;
+	Constraint();
 	Constraint(Particle _part1, Particle _part2);
 	//void setConstraint(Particle part1, Particle part2);
 	void evalConstraint();	
-	Particle part1, part2;
+
 	
 private:
 	float structDistance; //the default resting distance between two particles
@@ -77,4 +79,5 @@ private:
 
 //Functions
 ParticleSystem initializeCloth();
+void newConstraint(Particle part1, Particle part2);
 glm::vec3 getTriangalNormal(Particle part1, Particle part2, Particle part3);
