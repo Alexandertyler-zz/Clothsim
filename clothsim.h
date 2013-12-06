@@ -65,11 +65,12 @@ class Constraint
 {
 public:
 	Constraint();
-	void makeConstraint(Particle part1, Particle part2);
+	void setConstraint(Particle part1, Particle part2);
 	void evalConstraint();	
+	Particle part1, part2;
 	
 private:
-	Particle part1, part2;
+	float structDistance; //the default resting distance between two particles
 	
 };
 
