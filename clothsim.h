@@ -32,7 +32,7 @@ public:
 	void evalForce();
   void changePos(glm::vec3 p);
 
-private:
+
 	bool canMove;
 	float mass;
 	glm::vec3  pos, oldPos, vel, accel;
