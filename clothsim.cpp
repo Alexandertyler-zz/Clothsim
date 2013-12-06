@@ -7,8 +7,11 @@
 */
 
 /*GLOBAL VARIABLES*/
+
+//number of particles per side of the cloth
 float particleSide = 10.0f;
 int numParticles = particleSide*particleSide;
+//the size of the cloth length
 float clothSide = 10.0f;
 glm::vec3 gravity(0, 0, 0);
 float damp = .1f;
@@ -70,15 +73,15 @@ void ParticleSystem::initializeConstraints()
 	}
 	else 
 	{
-		for(int i=0; i < clothSide; i++)
+		for(int i=0; i < particleSide; i++)
 		{
-			for(int j=0; j < clothSide; j++)
+			for(int j=0; j < particleSide; j++)
 			{
 				Particle p1, p2;
 				p1 = particleVector[i][j];
-				if(j != clothSide-1)
+				if(j != particleSide-1)
 				{
-					p2 = [i+1][j];
+					p2 = particleVector[i+1][j];
 					newConstraint(p1, p2);
 				}
 			}
@@ -153,7 +156,7 @@ we're thinking about going with having a system that can work with an number of 
 
 ParticleSystem initializeCloth(){
 	ParticleSystem cloth;
-	for (int i=0; i < clothSide; i++)
+	for (int i=0; i < particleSide; i++)
 	{
 		//initialize a new particle and add it to the vector	
 		Particle currParticle;
