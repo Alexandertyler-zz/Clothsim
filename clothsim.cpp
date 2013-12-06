@@ -29,10 +29,12 @@ Particle::Particle()
 	return;
 }
 
-Particle::Particle(float _mass, glm::vec3 _pos)
+Particle::Particle(glm::vec3 _pos)
 {
-  	mass = _mass;
   	pos = _pos;
+  	mass = 1.0f;
+  	oldPos = _pos;
+  	canMove = true;
 }
 
 //evaluate the force acting on each particle
@@ -58,51 +60,6 @@ void Particle::changePos(glm::vec3 p)
 	}
     
 }
-
-ParticleSystem::ParticleSystem()
-{
-	sysPartCount = 0;
-	return;
-}
-
-//Use this when system is full to initialize all constraints
-void ParticleSystem::initializeConstraints()
-{
-	if(sysPartCount != numParticles)
-	{
-        std::cout << "sysPartCount: " << sysPartCount << " numParticles: " << numParticles << '\n';
-		std::cerr << "Particle System count is diff from global count." << std::endl;
-	}
-	else
-	{
-		std::cout << "No Error" << std::endl;
-		for(int i=0; i < particleSide; i++)
-		{
-			for(int j=0; j < particleSide; j++)
-			{
-				Particle p1, p2;
-				p1 = particleVector[i][j];
-				if(j != particleSide-1 && i != particleSide-1)
-				{
-					p2 = particleVector[i+1][j];
-					newConstraint(p1, p2);
-					p2 = particleVector[i][j+1];
-					newConstraint(p1, p2);
-				}else if(i != particleSide-1) {
-					p2 = particleVector[i+1][j];
-					newConstrain(p1, p2);
-				}else if(j != particleSide - 1) {
-
-				}
-			}
-		}
-		//struct loop
-		//bend loop
-		//shear loop
-	}
-	return;
-}
-
 
 //we should do an evalForce function in each class for the different objects. Makes it
 //more specialized that way.
@@ -164,17 +121,65 @@ void Constraint::evalConstraint()
  
  */
 
-ParticleSystem initializeCloth()
+
+ParticleSystem::ParticleSystem()
 {
-	ParticleSystem cloth;
-	
-	for (int i=0; i < particleSide; i++)
+	sysPartCount = 0;
+	return;
+}
+
+//Use this when system is full to initialize all constraints
+void ParticleSystem::initializeConstraints()
+{
+	if(sysPartCount != numParticles)
 	{
-		for (int j=0; j < particleSide; j++)
-		{		
-			//initialize a new particle and add it to the vector
-			Particle currParticle;
-			particleVector[i].push_back(currParticle);
+        std::cout << "sysPartCount: " << sysPartCount << " numParticles: " << numParticles << '\n';
+		std::cerr << "Particle System count is diff from global count." << std::endl;
+	}
+	else
+	{
+		std::cout << "No Error" << std::endl;
+		for(int i=0; i < particleSide; i++)
+		{
+			for(int j=0; j < particleSide; j++)
+			{
+				Particle p1, p2;
+				p1 = particleVector[i][j];
+				if(j != particleSide-1 && i != particleSide-1)
+				{
+					p2 = particleVector[i+1][j];
+					newConstraint(p1, p2);
+					p2 = particleVector[i][j+1];
+					newConstraint(p1, p2);
+				}else if(i != particleSide-1) {
+					p2 = particleVector[i+1][j];
+					newConstraint(p1, p2);
+				}else if(j != particleSide - 1) {
+
+				}
+			}
+		}
+		//struct loop
+		//bend loop
+		//shear loop
+	}
+	return;
+}
+
+
+
+ParticleSystem initializeCloth(){
+	ParticleSystem cloth;
+	for (int x=0; x < particleSide; x++)
+	{
+		for (int y = 0; y < particleSide; y++) {
+			//initialize a new particle and add it to the vector	
+			glm::vec3 particlePos = glm::vec3(clothSide * (x/(float) particleSide),
+								-clothSide * (y/(float) particleSide),
+								0);
+			Particle currParticle(particlePos);
+			particleVector[x].push_back(currParticle);
+
 			cloth.sysPartCount += 1;
 		}
 	}
