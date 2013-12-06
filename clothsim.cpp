@@ -61,6 +61,7 @@ void Particle::changePos(glm::vec3 p)
 
 ParticleSystem::ParticleSystem()
 {
+	sysPartCount = 0;
 	return;
 }
 
@@ -74,13 +75,14 @@ void ParticleSystem::initializeConstraints()
 	}
 	else
 	{
+		std::cout << "error here" << std::endl;
 		for(int i=0; i < particleSide; i++)
 		{
 			for(int j=0; j < particleSide; j++)
 			{
 				Particle p1, p2;
 				p1 = particleVector[i][j];
-				if(j != particleSide-1)
+				if(j != particleSide-1 && i != particleSide-1)
 				{
 					p2 = particleVector[i+1][j];
 					newConstraint(p1, p2);
@@ -155,14 +157,19 @@ void Constraint::evalConstraint()
  
  */
 
-ParticleSystem initializeCloth(){
+ParticleSystem initializeCloth()
+{
 	ParticleSystem cloth;
+	
 	for (int i=0; i < particleSide; i++)
 	{
-		//initialize a new particle and add it to the vector
-		Particle currParticle;
-		particleVector[i].push_back(currParticle);
-		cloth.sysPartCount += 1;
+		for (int j=0; j < particleSide; j++)
+		{		
+			//initialize a new particle and add it to the vector
+			Particle currParticle;
+			particleVector[i].push_back(currParticle);
+			cloth.sysPartCount += 1;
+		}
 	}
 }
 
@@ -264,7 +271,7 @@ void idleInput (unsigned char key, int xmouse, int ymouse) {
 
 int main(int argc, char *argv[])
 {
-    glutInit(&argc, argv);
+	glutInit(&argc, argv);
     
 	ParticleSystem cloth;
 	cloth = initializeCloth();
@@ -272,25 +279,25 @@ int main(int argc, char *argv[])
 	//timeloop
 	//evalforce
 	//for #of evals:
-    //eval
-    //spherecollision
+	//eval
+	//spherecollision
     
     
-    //CREATE WINDOW AND DRAW SCENE
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    // Initalize theviewport size
-    viewport.w = 400;
-    viewport.h = 400;
-    glutInitWindowSize(viewport.w, viewport.h);
-    glutInitWindowPosition(0,0);
-    glutCreateWindow("Cloth Simulation");
+    	//CREATE WINDOW AND DRAW SCENE
+    	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    	// Initalize theviewport size
+    	viewport.w = 400;
+    	viewport.h = 400;
+    	glutInitWindowSize(viewport.w, viewport.h);
+    	glutInitWindowPosition(0,0);
+    	glutCreateWindow("Cloth Simulation");
     
-    initScene();
+    	initScene();
     
-    glutDisplayFunc(myDisplay);
-    glutReshapeFunc(myReshape);
-    glutKeyboardFunc(idleInput);
-    glutMainLoop();
+    	glutDisplayFunc(myDisplay);
+    	glutReshapeFunc(myReshape);
+    	glutKeyboardFunc(idleInput);
+    	glutMainLoop();
     
 	
 	return 1;
