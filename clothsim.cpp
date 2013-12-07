@@ -170,8 +170,8 @@ ParticleSystem initializeVerticalCloth(){
 	{
 		for (int x = 0; x < particleSide; x++) {
 			//initialize a new particle and add it to the vector	
-			glm::vec3 particlePos(clothSide * (x/(float)particleSide),
-				-clothSide * (y/(float)particleSide),
+			glm::vec3 particlePos = glm::vec3(clothSide/((float) (particleSide - 1)) * x,
+				-clothSide/((float) (particleSide - 1)) * y,
 				0);
 			Particle currParticle(particlePos);
 			particleVector[x].push_back(currParticle);
@@ -180,21 +180,21 @@ ParticleSystem initializeVerticalCloth(){
 	}
 }
 
-// ParticleSystem initializeHorizCloth(){
-// 	ParticleSystem cloth;
-// 	for (int y = 0; y < particleSide; y++)
-// 	{
-// 		for (int x = 0; x < particleSide; x++) {
-// 			//initialize a new particle and add it to the vector	
-// 			glm::vec3 particlePos = glm::vec3(clothSide/(float)particleSide * x,
-// 								-clothSide/(float)particleSide * y),
-// 								0);
-// 			Particle currParticle(particlePos);
-// 			particleVector[x].push_back(currParticle);
-// 			cloth.sysPartCount += 1;
-// 		}
-// 	}
-// }
+ParticleSystem initializeHorizCloth(){
+	ParticleSystem cloth;
+	for (int z = 0; z < particleSide; z++)
+	{
+		for (int x = 0; x < particleSide; x++) {
+			//now, the y position of the cloth does not change, since it's horizontal
+			glm::vec3 particlePos = glm::vec3(clothSide/((float) (particleSide - 1)) * x,
+				0,
+				-clothSide/((float) (particleSide - 1)) * z);
+			Particle currParticle(particlePos);
+			particleVector[x].push_back(currParticle);
+			cloth.sysPartCount += 1;
+		}
+	}
+}
 
 
 //Gets the normal of the triangle created by three particles PART1, PART2, PART3
