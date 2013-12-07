@@ -78,6 +78,7 @@ private:
 
 
 //Functions
-ParticleSystem initializeCloth();
+ParticleSystem initializeVerticalCloth();
+ParticleSystem initializeHorizCloth();
 void newConstraint(Particle part1, Particle part2);
 glm::vec3 getTriangleNormal(Particle part1, Particle part2, Particle part3);

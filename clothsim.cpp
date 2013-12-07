@@ -163,21 +163,39 @@ void ParticleSystem::initializeConstraints()
 
 
 
-ParticleSystem initializeCloth(){
+
+ParticleSystem initializeVerticalCloth(){
 	ParticleSystem cloth;
-	for (int x=0; x < particleSide; x++)
+	for (int y = 0; y < particleSide; y++)
 	{
-		for (int y = 0; y < particleSide; y++) {
+		for (int x = 0; x < particleSide; x++) {
 			//initialize a new particle and add it to the vector	
-			glm::vec3 particlePos = glm::vec3(clothSide * (x/(float) particleSide),
-								-clothSide * (y/(float) particleSide),
-								0);
+			glm::vec3 particlePos(clothSide * (x/(float)particleSide),
+				-clothSide * (y/(float)particleSide),
+				0);
 			Particle currParticle(particlePos);
 			particleVector[x].push_back(currParticle);
 			cloth.sysPartCount += 1;
 		}
 	}
 }
+
+// ParticleSystem initializeHorizCloth(){
+// 	ParticleSystem cloth;
+// 	for (int y = 0; y < particleSide; y++)
+// 	{
+// 		for (int x = 0; x < particleSide; x++) {
+// 			//initialize a new particle and add it to the vector	
+// 			glm::vec3 particlePos = glm::vec3(clothSide/(float)particleSide * x,
+// 								-clothSide/(float)particleSide * y),
+// 								0);
+// 			Particle currParticle(particlePos);
+// 			particleVector[x].push_back(currParticle);
+// 			cloth.sysPartCount += 1;
+// 		}
+// 	}
+// }
+
 
 //Gets the normal of the triangle created by three particles PART1, PART2, PART3
 glm::vec3 getTriangleNormal(Particle part1, Particle part2, Particle part3) {
@@ -280,7 +298,7 @@ int main(int argc, char *argv[])
     glutInit(&argc, argv);
     
 	ParticleSystem cloth;
-	cloth = initializeCloth();
+	cloth = initializeVerticalCloth();
 	cloth.initializeConstraints();
 	//timeloop
 	//evalforce
