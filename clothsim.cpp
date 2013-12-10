@@ -12,7 +12,7 @@
 float particleSide = 10.0f;
 int numParticles = particleSide*particleSide;
 //the size of the cloth length
-float clothSide = 10.0f;
+float clothSide = 4.0f;
 glm::vec3 gravity(0, 0, 0);
 float damp = .1f;
 float timeStep = .5f*.5f;
@@ -170,10 +170,18 @@ ParticleSystem initializeVerticalCloth(){
 	{
 		for (int x = 0; x < particleSide; x++) {
 			//initialize a new particle and add it to the vector	
-			glm::vec3 particlePos = glm::vec3(clothSide/((float) (particleSide - 1)) * x,
+			
+            //changed to have x axis not change -- vertical to viewer now and offset by 4 since sphere is at origin
+            glm::vec3 particlePos = glm::vec3(-4,
+                                              clothSide/((float) (particleSide - 1)) * x,
+                                              -clothSide/((float) (particleSide - 1)) * y);
+            //before:
+            /*glm::vec3 particlePos = glm::vec3(clothSide/((float) (particleSide - 1)) * x,
 				-clothSide/((float) (particleSide - 1)) * y,
-				0);
-			Particle currParticle(particlePos);
+				0);*/
+			
+            
+            Particle currParticle(particlePos);
 			particleVector[x].push_back(currParticle);
 			cloth.sysPartCount += 1;
 		}
@@ -267,11 +275,39 @@ void myDisplay() {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     
-    gluLookAt(0, 0, 5,  //look from 0, 0, 5 (along z axis)
+    gluLookAt(-3, 0, 5,  //look from -3, 0, 5 (along z axis and with an x offset to see the cloth not strictly vertical)
               0, 0, 0,  //look at origin
               0, 1, 0); //y up vector
+
     
-    glutSolidSphere(2, 25, 25); //sphere with center at origin, radius 2
+    //Draw triangles of cloth -- need to walkthrough differently to fix the ordering to draw triangles for horizontal cloth
+    glBegin(GL_TRIANGLES);
+    glm::vec3 triNormal;
+    for (int x = 0; x<particleSide-1; x++) {
+        for (int y = 0; y<particleSide-1; y++) {
+
+            //first triangle in square
+            triNormal = getTriangleNormal(particleVector[x][y], particleVector[x+1][y], particleVector[x][y+1]);
+            glNormal3f(triNormal.x, triNormal.y, triNormal.z); //shading
+                       
+            glVertex3f(particleVector[x][y].pos.x, particleVector[x][y].pos.y, particleVector[x][y].pos.z);
+            glVertex3f(particleVector[x+1][y].pos.x, particleVector[x+1][y].pos.y, particleVector[x+1][y].pos.z);
+            glVertex3f(particleVector[x][y+1].pos.x, particleVector[x][y+1].pos.y, particleVector[x][y+1].pos.z);
+            
+            //second triangle in square
+            triNormal = getTriangleNormal(particleVector[x+1][y], particleVector[x+1][y+1], particleVector[x][y+1]);
+            glNormal3f(triNormal.x, triNormal.y, triNormal.z); //shading
+            
+            glVertex3f(particleVector[x+1][y].pos.x, particleVector[x+1][y].pos.y, particleVector[x+1][y].pos.z);
+            glVertex3f(particleVector[x+1][y+1].pos.x, particleVector[x+1][y+1].pos.y, particleVector[x+1][y+1].pos.z);
+            glVertex3f(particleVector[x][y+1].pos.x, particleVector[x][y+1].pos.y, particleVector[x][y+1].pos.z);
+        }
+    }
+    glEnd();
+    
+    
+    glutSolidSphere(1, 25, 25); //sphere with center at origin, radius 1
+    
     
     glFlush();
     glutSwapBuffers();
