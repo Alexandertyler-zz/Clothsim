@@ -36,6 +36,7 @@ public:
 	//functions:
 	void evalForce(glm::vec3 force);
   void changePos(glm::vec3 p);
+  void freezeParticle();
 
 	
 };
