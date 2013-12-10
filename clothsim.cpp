@@ -8,14 +8,23 @@
 
 /*GLOBAL VARIABLES*/
 
-//number of particles per side of the cloth
+//number of particles on one side of the cloth
 float particleSide = 10.0f;
 int numParticles = particleSide*particleSide;
-//the size of the cloth length
+
+//clothSide defines the length of one side of the cloth
 float clothSide = 4.0f;
+
+//The gravity vector
 glm::vec3 gravity(0, 0, 0);
+
+
 float damp = .1f;
 float timeStep = .5f*.5f;
+
+//The translation variables : used to translate the sphere
+float translateX = 0;
+float translateY = 0;
 
 std::vector<std::vector<Particle> > particleVector(particleSide);
 std::vector<Constraint> constraintVector;
@@ -112,7 +121,25 @@ void Constraint::evalConstraint()
 }
 
 
+//The special keyboard functions to translate our ball
+void specialKeyFunc(int key, int x, int y) {
 
+	switch(key){
+		case GLUT_KEY_LEFT :
+			translateX -= 0.15f;
+			break;
+		case GLUT_KEY_RIGHT :
+			translateX += 0.15f;
+			break;
+		case GLUT_KEY_UP :
+			translateY += 0.15f;
+			break;
+		case GLUT_KEY_DOWN :
+			translateY -= 0.15f;
+			break;
+	}
+  glutPostRedisplay();
+}
 /* NOTES/THINGS TO CONSIDER
  
  - for the particle numerical integration, we were thinking about doing either Euler or Verlet,
@@ -279,6 +306,8 @@ void myDisplay() {
               0, 0, 0,  //look at origin
               0, 1, 0); //y up vector
 
+	glPushMatrix();
+	glTranslatef(translateX, translateY, 0.0f);
     
     //Draw triangles of cloth -- need to walkthrough differently to fix the ordering to draw triangles for horizontal cloth
     glBegin(GL_TRIANGLES);
@@ -304,6 +333,8 @@ void myDisplay() {
         }
     }
     glEnd();
+
+    glPopMatrix();
     
     
     glutSolidSphere(1, 25, 25); //sphere with center at origin, radius 1
@@ -357,6 +388,7 @@ int main(int argc, char *argv[])
     glutDisplayFunc(myDisplay);
     glutReshapeFunc(myReshape);
     glutKeyboardFunc(idleInput);
+    glutSpecialFunc(specialKeyFunc);
     glutMainLoop();
     
 	
