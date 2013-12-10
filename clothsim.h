@@ -46,10 +46,7 @@ class ParticleSystem
 {
 public:
 	ParticleSystem();
-	//somehow, set up linking system: iterate through all particles, and link them.
-	//THINK ABOUT HOW TO DO LINKING SYSTEM???
 	void initializeConstraints();
-	void createConstraint(Particle part1, Particle part2);
 	int sysPartCount;
 };
 
@@ -81,5 +78,5 @@ private:
 //Functions
 ParticleSystem initializeVerticalCloth();
 ParticleSystem initializeHorizCloth();
-void newConstraint(Particle part1, Particle part2);
 glm::vec3 getTriangleNormal(Particle part1, Particle part2, Particle part3);
+void createConstraint(Particle part1, Particle part2);
