@@ -67,12 +67,19 @@ void Particle::evalForce(glm::vec3 force)
 }
 
 
+// Changes the particle's position by p
 void Particle::changePos(glm::vec3 p)
 {
 	if(canMove){
 		pos += p;
 	}
     
+}
+
+//Freezes the particle so it can not move. 
+void Particle::freezeParticle()
+{
+	canMove = false;
 }
 
 
@@ -126,25 +133,7 @@ void Constraint::evalConstraint()
 }
 
 
-//The special keyboard functions to translate our ball
-void specialKeyFunc(int key, int x, int y) {
 
-	switch(key){
-		case GLUT_KEY_LEFT :
-			translateX -= 0.15f;
-			break;
-		case GLUT_KEY_RIGHT :
-			translateX += 0.15f;
-			break;
-		case GLUT_KEY_UP :
-			translateY += 0.15f;
-			break;
-		case GLUT_KEY_DOWN :
-			translateY -= 0.15f;
-			break;
-	}
-  glutPostRedisplay();
-}
 /* NOTES/THINGS TO CONSIDER
  
  - for the particle numerical integration, we were thinking about doing either Euler or Verlet,
@@ -407,6 +396,26 @@ void idleInput (unsigned char key, int xmouse, int ymouse) {
         default:
             break;
     }
+}
+
+//The special keyboard functions to translate our ball
+void specialKeyFunc(int key, int x, int y) {
+
+	switch(key){
+		case GLUT_KEY_LEFT :
+			translateX -= 0.15f;
+			break;
+		case GLUT_KEY_RIGHT :
+			translateX += 0.15f;
+			break;
+		case GLUT_KEY_UP :
+			translateY += 0.15f;
+			break;
+		case GLUT_KEY_DOWN :
+			translateY -= 0.15f;
+			break;
+	}
+  glutPostRedisplay();
 }
 
 
