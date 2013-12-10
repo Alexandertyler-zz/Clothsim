@@ -166,15 +166,15 @@ void ParticleSystem::initializeConstraints()
 	}
 	else 
 	{
-		for(int i=0; i < particleSide; i++)
+		for(int y=0; y < particleSide; y++)
 		{
-			for(int j=0; j < particleSide; j++)
+			for(int x=0; x < particleSide; x++)
 			{
 				Particle p1, p2;
-				p1 = particleVector[i][j];
-				if(j != particleSide-1)
+				p1 = particleVector[x][y];
+				if(y != particleSide-1)
 				{
-					p2 = particleVector[i+1][j];
+					p2 = particleVector[x+1][y];
 					newConstraint(p1, p2);
 				} else {
 
@@ -306,19 +306,17 @@ void myDisplay() {
               0, 0, 0,  //look at origin
               0, 1, 0); //y up vector
 
-	glPushMatrix();
-	glTranslatef(translateX, translateY, 0.0f);
     
     //Draw triangles of cloth -- need to walkthrough differently to fix the ordering to draw triangles for horizontal cloth
     glBegin(GL_TRIANGLES);
     glm::vec3 triNormal;
     for (int x = 0; x<particleSide-1; x++) {
-        for (int y = 0; y<particleSide-1; y++) {
+    	for (int y = 0; y<particleSide-1; y++) {
 
             //first triangle in square
-            triNormal = getTriangleNormal(particleVector[x][y], particleVector[x+1][y], particleVector[x][y+1]);
+    		triNormal = getTriangleNormal(particleVector[x][y], particleVector[x+1][y], particleVector[x][y+1]);
             glNormal3f(triNormal.x, triNormal.y, triNormal.z); //shading
-                       
+
             glVertex3f(particleVector[x][y].pos.x, particleVector[x][y].pos.y, particleVector[x][y].pos.z);
             glVertex3f(particleVector[x+1][y].pos.x, particleVector[x+1][y].pos.y, particleVector[x+1][y].pos.z);
             glVertex3f(particleVector[x][y+1].pos.x, particleVector[x][y+1].pos.y, particleVector[x][y+1].pos.z);
@@ -330,14 +328,19 @@ void myDisplay() {
             glVertex3f(particleVector[x+1][y].pos.x, particleVector[x+1][y].pos.y, particleVector[x+1][y].pos.z);
             glVertex3f(particleVector[x+1][y+1].pos.x, particleVector[x+1][y+1].pos.y, particleVector[x+1][y+1].pos.z);
             glVertex3f(particleVector[x][y+1].pos.x, particleVector[x][y+1].pos.y, particleVector[x][y+1].pos.z);
-        }
+      }
     }
+
     glEnd();
 
-    glPopMatrix();
-    
-    
+
+    //Pushing the translate for the sphere onto the matrix:
+    glPushMatrix();
+    glTranslatef(translateX, translateY, 0.0f);
+
     glutSolidSphere(1, 25, 25); //sphere with center at origin, radius 1
+
+    glPopMatrix();
     
     
     glFlush();
