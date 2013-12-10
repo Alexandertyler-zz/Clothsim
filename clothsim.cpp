@@ -157,6 +157,10 @@ ParticleSystem::ParticleSystem()
 	return;
 }
 
+void ParticleSystem::createConstraint(Particle part1, Particle part2) {
+		constraintVector.push_back(Constraint(part1,part2));
+}
+
 //Use this when system is full to initialize all constraints
 void ParticleSystem::initializeConstraints()
 {
@@ -166,10 +170,24 @@ void ParticleSystem::initializeConstraints()
 	}
 	else 
 	{
+
+		//Making a constraint between the particles directly adjacent to the current particle
 		for(int y=0; y < particleSide; y++)
 		{
 			for(int x=0; x < particleSide; x++)
 			{
+
+				/////NEED TO CHECK INDEXING OF PARTICLEVECTOR!!
+				//Creating a constraint between particles (x, y) - (x+1, y) (directly to the right)
+				if (x < particleSide-1) createConstraint(particleVector[x][y],particleVector[x+1][y]);
+				//Creating a constraint between particles (x, y) - (x, y+1) (directly to the bottom)
+				if (y < particleSide-1) createConstraint(particleVector[x][y],particleVector[x][y+1]);
+				//Creating a constraint between particles (x, y) - (x+1, y+1) (first diagonal)
+				if (x < particleSide-1 && y < particleSide-1) createConstraint(particleVector[x][y],particleVector[x+1][y+1]);
+				//Creating a constraint between particles (x+1, y) - (x, y+1) (second diagonal)
+				if (x < particleSide-1 && y < particleSide-1) createConstraint(particleVector[x+1][y],particleVector[x][y+1]);
+
+				/* old code
 				Particle p1, p2;
 				p1 = particleVector[x][y];
 				if(y != particleSide-1)
@@ -179,6 +197,10 @@ void ParticleSystem::initializeConstraints()
 				} else {
 
 				}
+
+				*/
+
+
 			}
 		}
 		//struct loop
@@ -198,17 +220,18 @@ ParticleSystem initializeVerticalCloth(){
 		for (int x = 0; x < particleSide; x++) {
 			//initialize a new particle and add it to the vector	
 			
-            //changed to have x axis not change -- vertical to viewer now and offset by 4 since sphere is at origin
-            glm::vec3 particlePos = glm::vec3(-4,
-                                              clothSide/((float) (particleSide - 1)) * x,
-                                              -clothSide/((float) (particleSide - 1)) * y);
-            //before:
-            /*glm::vec3 particlePos = glm::vec3(clothSide/((float) (particleSide - 1)) * x,
-				-clothSide/((float) (particleSide - 1)) * y,
-				0);*/
-			
-            
-            Particle currParticle(particlePos);
+      //changed to have x axis not change -- vertical to viewer now and offset by 4 since sphere is at origin
+			glm::vec3 particlePos = glm::vec3(-4,
+				clothSide/((float) (particleSide - 1)) * x,
+				-clothSide/((float) (particleSide - 1)) * y);
+      //before:
+      /*glm::vec3 particlePos = glm::vec3(clothSide/((float) (particleSide - 1)) * x,
+			-clothSide/((float) (particleSide - 1)) * y,
+			0);*/
+
+
+			Particle currParticle(particlePos);
+			//this doesn't make sense...?
 			particleVector[x].push_back(currParticle);
 			cloth.sysPartCount += 1;
 		}

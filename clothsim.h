@@ -49,6 +49,7 @@ public:
 	//somehow, set up linking system: iterate through all particles, and link them.
 	//THINK ABOUT HOW TO DO LINKING SYSTEM???
 	void initializeConstraints();
+	void createConstraint(Particle part1, Particle part2);
 	int sysPartCount;
 };
 
