@@ -43,11 +43,13 @@ Particle::Particle(glm::vec3 _pos)
   	pos = _pos;
   	mass = 1.0f;
   	oldPos = _pos;
+  	accel = glm::vec3(0.0f, 0.0f, 0.0f);
   	canMove = true;
+
 }
 
 //evaluate the force acting on each particle
-void Particle::evalForce()
+void Particle::evalForce(glm::vec3 force)
 {
 	//pseudocode:
 	//foreach particle, add the gravity force
@@ -59,6 +61,9 @@ void Particle::evalForce()
 	//vertlet integration
 	pos = (pos-oldPos)*(1.0f*damp) + accel*timeStep;
 	oldPos = tmp;
+
+	//Lizzie added:
+	accel += force/mass;
 }
 
 

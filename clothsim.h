@@ -26,16 +26,17 @@
 class Particle
 {
 public:
-	//Particle constructor:
-	Particle();
-	Particle(glm::vec3 _pos);
-	void evalForce();
-  void changePos(glm::vec3 p);
-
-
+	//fields:
 	bool canMove;
 	float mass;
 	glm::vec3  pos, oldPos, vel, accel;
+	//Constructors:
+	Particle();
+	Particle(glm::vec3 _pos);
+	//functions:
+	void evalForce(glm::vec3 force);
+  void changePos(glm::vec3 p);
+
 	
 };
 
@@ -45,9 +46,13 @@ public:
 class ParticleSystem
 {
 public:
-	ParticleSystem();
-	void initializeConstraints();
+	//Fields:
 	int sysPartCount;
+	//Constructors:
+	ParticleSystem();
+	//Functions
+	void initializeConstraints();
+	
 };
 
 
@@ -61,9 +66,12 @@ class Sphere
 class Constraint
 {
 public:
+	//Fields:
 	Particle part1, part2;
+	//Constructors:
 	Constraint();
 	Constraint(Particle _part1, Particle _part2);
+	//Functions:
 	//void setConstraint(Particle part1, Particle part2);
 	void evalConstraint();	
 
