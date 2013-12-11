@@ -21,7 +21,7 @@ glm::vec3 gravity(0.1, 0, 0);
 
 
 float damp = .1f;
-float timeStep = 1;//changes how fast and far the cloth moves by increasing acceleration
+float timeStep = .5f;//changes how fast and far the cloth moves by increasing acceleration
 int elapsedTime = 0;
 int timeEnd = 100;
 int timedelay = 0;
@@ -163,7 +163,7 @@ void Constraint::evalConstraint()
 
 ParticleSystem::ParticleSystem()
 {
-	return;
+
 }
 
 
@@ -406,11 +406,13 @@ void myDisplay() {
             }
             
             //EVAL CONSTRAINTS LOOP
-            /*
-            for (int i=0; i<constraintVector.size(); i++) {
-                    constraintVector[i].evalConstraint(); //eval each Constraint in constraintVector
-            }*/
-            
+            for (int j=0; j<10; j++) {
+            	for (int i=0; i<constraintVector.size(); i++) {
+                	    constraintVector[i].evalConstraint(); //eval each Constraint in constraintVector
+            	}
+	    }
+            //need to check if any constraints aren't satisfied. Using a depth limit for now
+	    
             //CHECK SPHERE COLLISION LOOP
             /*
             for (int x=0; x<particleSide; x++) {
