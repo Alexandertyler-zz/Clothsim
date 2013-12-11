@@ -78,7 +78,7 @@ public:
 	void evalConstraint();
     
 	
-private:
+//private:
 	float structDistance; //the default resting distance between two particles
 	
 };
@@ -90,3 +90,4 @@ ParticleSystem initializeVerticalCloth();
 ParticleSystem initializeHorizCloth();
 glm::vec3 getTriangleNormal(Particle part1, Particle part2, Particle part3);
 void createConstraint(Particle* part1, Particle* part2);
+bool constraintsSatisfied();
