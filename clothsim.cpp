@@ -21,7 +21,7 @@ glm::vec3 gravity(0.1, 0, 0);
 
 
 float damp = .1f;
-float timeStep = .5f;//changes how fast and far the cloth moves by increasing acceleration
+float timeStep = 1;//changes how fast and far the cloth moves by increasing acceleration
 int elapsedTime = 0;
 int timeEnd = 100;
 int timedelay = 0;
@@ -397,14 +397,15 @@ void myDisplay() {
             //TODO AFTER evalForce, evalConstraints, and sphereCollision loops working -- loop over following three loops if the constraints aren't satisfied
             //for all constraints -- if one isn't satisfied, keep looping
             
-            
+            /*
             //EVAL FORCE LOOP
             for (int x=0; x<particleSide; x++) {
                 for (int y=0; y<particleSide; y++) {
                     particleVector[x][y].evalForce(gravity); //evalForce first on particles and change positions
                 }
-            }
-            
+            }*/
+	    glm::vec3 testForce(1,0,0);
+            particleVector[0][0].evalForce(testForce);
             //EVAL CONSTRAINTS LOOP
             for (int j=0; j<10; j++) {
             	for (int i=0; i<constraintVector.size(); i++) {
@@ -414,12 +415,12 @@ void myDisplay() {
             //need to check if any constraints aren't satisfied. Using a depth limit for now
 	    
             //CHECK SPHERE COLLISION LOOP
-            /*
+            
             for (int x=0; x<particleSide; x++) {
                 for (int y=0; y<particleSide; y++) {
                     particleVector[x][y].sphereCollision(); //check if particle collides with sphere and if so, change pos
                 }
-            }*/
+            }
             
             
             elapsedTime++;
