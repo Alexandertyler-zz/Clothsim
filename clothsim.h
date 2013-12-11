@@ -35,9 +35,10 @@ public:
 	Particle(glm::vec3 _pos);
 	//functions:
 	void evalForce(glm::vec3 force);
-  void changePos(glm::vec3 p);
-  void freezeParticle();
-
+    void changePos(glm::vec3 p);
+    void sphereCollision();
+    void freezeParticle();
+    
 	
 };
 
@@ -68,14 +69,14 @@ class Constraint
 {
 public:
 	//Fields:
-	Particle part1, part2;
+	Particle *part1, *part2;
 	//Constructors:
 	Constraint();
-	Constraint(Particle _part1, Particle _part2);
+	Constraint(Particle* _part1, Particle* _part2);
 	//Functions:
 	//void setConstraint(Particle part1, Particle part2);
-	void evalConstraint();	
-
+	void evalConstraint();
+    
 	
 private:
 	float structDistance; //the default resting distance between two particles
@@ -88,4 +89,4 @@ private:
 ParticleSystem initializeVerticalCloth();
 ParticleSystem initializeHorizCloth();
 glm::vec3 getTriangleNormal(Particle part1, Particle part2, Particle part3);
-void createConstraint(Particle part1, Particle part2);
+void createConstraint(Particle* part1, Particle* part2);
