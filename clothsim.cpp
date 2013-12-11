@@ -25,7 +25,7 @@ float timeStep = 1;//changes how fast and far the cloth moves by increasing acce
 int elapsedTime = 0;
 int timeEnd = 100;
 int timedelay = 0;
-float radius = 1;
+float radius = 2;
 
 //The translation variables : used to translate the sphere
 float translateX = 0;
@@ -79,6 +79,7 @@ void Particle::sphereCollision () {
  //if distance from point to origin of sphere less than radius 2
     if (sqrt( pow(pos.x, 2) + pow(pos.y, 2) + pow(pos.z, 2) ) < radius) {
         pos = glm::normalize(pos) * radius; //push position to surface of sphere (if change radius, change 2 to new radius value here)
+	std::cout << pos.x << " " << pos.y << " " << pos.z << std::endl;
     }
 }
 
@@ -404,24 +405,23 @@ void myDisplay() {
                     particleVector[x][y].evalForce(gravity); //evalForce first on particles and change positions
                 }
             }*/
-	    glm::vec3 testForce(1,0,0);
-            particleVector[0][0].evalForce(testForce);
+	    //glm::vec3 testForce(1,1,0);
+            //particleVector[0][0].evalForce(testForce);
             //EVAL CONSTRAINTS LOOP
-            for (int j=0; j<10; j++) {
-            	for (int i=0; i<constraintVector.size(); i++) {
-                	    constraintVector[i].evalConstraint(); //eval each Constraint in constraintVector
-            	}
-	    }
+	    
             //need to check if any constraints aren't satisfied. Using a depth limit for now
 	    
             //CHECK SPHERE COLLISION LOOP
-            
-            for (int x=0; x<particleSide; x++) {
-                for (int y=0; y<particleSide; y++) {
-                    particleVector[x][y].sphereCollision(); //check if particle collides with sphere and if so, change pos
-                }
-            }
-            
+            for (int j=0; j<10; j++) {            
+            	for (int i=0; i<constraintVector.size(); i++) {
+                	    constraintVector[i].evalConstraint(); //eval each Constraint in constraintVector
+            	}
+            	for (int x=0; x<particleSide; x++) {
+                	for (int y=0; y<particleSide; y++) {
+                    	particleVector[x][y].sphereCollision(); //check if particle collides with sphere and if so, change pos
+	    		}
+		}
+	    }
             
             elapsedTime++;
             timedelay++;
