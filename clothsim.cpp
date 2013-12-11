@@ -313,7 +313,7 @@ void drawcloth() {
     for (int x = 0; x<particleSide-1; x++) {
     	for (int y = 0; y<particleSide-1; y++) {
             
-            glColor3f(1.0f, .5f, 0.5f);
+            glColor3f(1.0f, 0.0f, 1.0f);
             //first triangle in square
     		triNormal = getTriangleNormal(particleVector[x][y], particleVector[x+1][y], particleVector[x][y+1]);
             glNormal3f(triNormal.x, triNormal.y, triNormal.z); //shading
@@ -326,7 +326,7 @@ void drawcloth() {
             
             
             //COMMENTED OUT TO SEE TRIANGLE INTERACTION/MORE OF A WIREFRAME OF IT
-            glColor3f(0.0f, 1.0f, 1.0f);
+            glColor3f(1.0f, 1.0f, 0.0f);
             //second triangle in square
             triNormal = getTriangleNormal(particleVector[x+1][y], particleVector[x+1][y+1], particleVector[x][y+1]);
             glNormal3f(triNormal.x, triNormal.y, triNormal.z); //shading
