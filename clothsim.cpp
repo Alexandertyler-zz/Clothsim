@@ -10,11 +10,11 @@
 /*GLOBAL VARIABLES*/
 
 //number of particles on one side of the cloth
-float particleSide = 10.0f;
+float particleSide = 50.0f;
 int numParticles = particleSide*particleSide;
 
 //clothSide defines the length of one side of the cloth
-float clothSide = 4.0f;
+float clothSide = 10.0f;
 
 //The gravity vector
 glm::vec3 gravity(0.1, 0, 0);
@@ -23,9 +23,11 @@ glm::vec3 gravity(0.1, 0, 0);
 float damp = .1f;
 float timeStep = 1;//changes how fast and far the cloth moves by increasing acceleration
 int elapsedTime = 0;
-int timeEnd = 100;
+int timeEnd = 200;
 int timedelay = 0;
 float radius = 1;
+
+bool collision = false;
 
 //The translation variables : used to translate the sphere
 float translateX = 0;
@@ -37,6 +39,7 @@ std::vector<Constraint> constraintVector;
 float structConstraint = clothSide/(particleSide-1.0f); // lizzie: the rest length between two particles (?)
 float shearConstraint = sqrt(2.0f*pow(structConstraint, 2));
 float bendConstraint = 2.0f*structConstraint;
+
 
 Particle::Particle()
 {
@@ -69,16 +72,18 @@ void Particle::evalForce(glm::vec3 force)
 	//vertlet integration
 	pos = pos+(pos-oldPos)*(1.0f*damp) + accel*timeStep;
 	oldPos = tmp;
-
+    
     accel = glm::vec3(0, 0, 0);
     
 }
 
 
 void Particle::sphereCollision () {
- //if distance from point to origin of sphere less than radius 2
-    if (sqrt( pow(pos.x, 2) + pow(pos.y, 2) + pow(pos.z, 2) ) < radius) {
-        pos = glm::normalize(pos) * radius; //push position to surface of sphere (if change radius, change 2 to new radius value here)
+    //if distance from point to origin of sphere less than radius 2
+    if (glm::length(pos) < radius-0.0001) {
+        
+        collision = true;
+        pos = (glm::normalize(pos) * (radius+0.01f)); //push position to surface of sphere + a small number so it's not directly on surface for rendering
     }
 }
 
@@ -136,15 +141,31 @@ void Constraint::evalConstraint()
 	glm::vec3 vec12 = part2->pos - part1->pos;
 	//the distance between particle1 and particle2
 	float dist = glm::length(vec12);
-	//getting the difference between the particle1's distance from particle2, with the structConstraint/resting distance.
-	glm::vec3 structDifference = vec12 * (1 - structDistance/dist);
-	//The distance each particle must move to satisfy the the structConstraint length:
-	glm::vec3 distToMove = (structDifference/2.0f);
-	//Moving particle1's position to the correct resting length, structConstraint
-	part1->changePos(distToMove);
-	//Moving particle2's position to the correct resting length, but in the NEGATIVE direction
-	part2->changePos(-distToMove);
     
+
+    if (dist > structDistance) {
+        //getting the difference between the particle1's distance from particle2, with the structConstraint/resting distance.
+        glm::vec3 structDifference = vec12 * (1 - structDistance/dist);
+        //The distance each particle must move to satisfy the the structConstraint length:
+        glm::vec3 distToMove = (structDifference/2.0f);
+        //Moving particle1's position to the correct resting length, structConstraint
+        part1->changePos(distToMove);
+        //Moving particle2's position to the correct resting length, but in the NEGATIVE direction
+        part2->changePos(-distToMove);
+    }
+    
+}
+
+bool constraintsSatisfied() {
+    
+    for (int i = 0; i<constraintVector.size(); i++) {
+        
+        glm::vec3 vec12 = constraintVector[i].part2->pos - constraintVector[i].part1->pos;
+        if (glm::length(vec12) > constraintVector[i].structDistance) {
+            return false;
+        }
+    }
+    return true;
 }
 
 
@@ -163,7 +184,7 @@ void Constraint::evalConstraint()
 
 ParticleSystem::ParticleSystem()
 {
-
+    
 }
 
 
@@ -177,9 +198,9 @@ ParticleSystem initializeVerticalCloth(){
 			//initialize a new particle and add it to the vector
 			
             //changed to have x axis not change -- vertical to viewer now and offset by 4 since sphere is at origin
-			glm::vec3 particlePos = glm::vec3(-4,
-                                              -clothSide/((float) (particleSide - 1)) * y,
-                                              clothSide/((float) (particleSide - 1)) * x);
+			glm::vec3 particlePos = glm::vec3(-5,
+                                              (-clothSide/((float) (particleSide - 1)) * y)+clothSide/2,
+                                              (clothSide/((float) (particleSide - 1)) * x)-clothSide/2);
             
             
 			Particle currParticle(particlePos);
@@ -217,25 +238,6 @@ void createConstraint(Particle* part1, Particle* part2)
 //Use this when system is full to initialize all constraints
 void ParticleSystem::initializeConstraints()
 {
-	if(sysPartCount != numParticles)
-	{
-		std::cerr << "Particle System count is diff from global count." << std::endl;
-	}
-	else
-	{
-        
-        /* Alex's old code
-         Particle p1, p2;
-         p1 = particleVector[x][y];
-         if(y != particleSide-1)
-         {
-         p2 = particleVector[x+1][y];
-         newConstraint(p1, p2);
-         } else {
-         
-         }
-         
-         */
         
 		//Making constraints between directly adjacent particles (structural + shear)
 		for(int y=0; y < particleSide; y++)
@@ -257,7 +259,7 @@ void ParticleSystem::initializeConstraints()
 				if (x < particleSide-1 && y < particleSide-1) {
 					createConstraint(&particleVector[x+1][y],&particleVector[x][y+1]);
 				}
-                
+             
 			}
 		}
         
@@ -278,13 +280,12 @@ void ParticleSystem::initializeConstraints()
 				if (x < particleSide-2 && y < particleSide-2) {
 					createConstraint(&particleVector[x+2][y],&particleVector[x][y+2]);
 				}
-             
+                
 			}
 		}
-        
-	}
-	return;
+    
 }
+
 
 //Gets the normal of the triangle created by three particles PART1, PART2, PART3
 glm::vec3 getTriangleNormal(Particle part1, Particle part2, Particle part3) {
@@ -301,13 +302,16 @@ glm::vec3 getTriangleNormal(Particle part1, Particle part2, Particle part3) {
 
 void drawcloth() {
     //Draw triangles of cloth -- need to walkthrough differently to fix the ordering to draw triangles for horizontal cloth
-    
-    glColor3f(1.0f, 0.0f, 0.0f);
+
+    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+
+    glEnable(GL_COLOR_MATERIAL);
     glBegin(GL_TRIANGLES);
     glm::vec3 triNormal;
     for (int x = 0; x<particleSide-1; x++) {
     	for (int y = 0; y<particleSide-1; y++) {
             
+            glColor3f(1.0f, 1.0f, 0.0f);
             //first triangle in square
     		triNormal = getTriangleNormal(particleVector[x][y], particleVector[x+1][y], particleVector[x][y+1]);
             glNormal3f(triNormal.x, triNormal.y, triNormal.z); //shading
@@ -315,24 +319,25 @@ void drawcloth() {
             
             glVertex3f(particleVector[x+1][y].pos.x, particleVector[x+1][y].pos.y, particleVector[x+1][y].pos.z);
             glVertex3f(particleVector[x][y].pos.x, particleVector[x][y].pos.y, particleVector[x][y].pos.z);
-
             glVertex3f(particleVector[x][y+1].pos.x, particleVector[x][y+1].pos.y, particleVector[x][y+1].pos.z);
             
+            
+            /*
+            //COMMENTED OUT TO SEE TRIANGLE INTERACTION/MORE OF A WIREFRAME OF IT
+            glColor3f(0.0f, 1.0f, 1.0f);
             //second triangle in square
             triNormal = getTriangleNormal(particleVector[x+1][y], particleVector[x+1][y+1], particleVector[x][y+1]);
             glNormal3f(triNormal.x, triNormal.y, triNormal.z); //shading
             
             glVertex3f(particleVector[x+1][y].pos.x, particleVector[x+1][y].pos.y, particleVector[x+1][y].pos.z);
-            
             glVertex3f(particleVector[x][y+1].pos.x, particleVector[x][y+1].pos.y, particleVector[x][y+1].pos.z);
-            
             glVertex3f(particleVector[x+1][y+1].pos.x, particleVector[x+1][y+1].pos.y, particleVector[x+1][y+1].pos.z);
-
+            */
         }
     }
     
     glEnd();
-
+    
 }
 
 
@@ -348,12 +353,12 @@ Viewport viewport;
 
 void initScene(){
     
-    GLfloat lmodel_ambient[] = { 0.2, 0.2, 0.2, 1.0 };
+    GLfloat lmodel_ambient[] = { 0.5, 0.5, 0.5, 1.0 };
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lmodel_ambient);
     glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
     
-    //glEnable(GL_LIGHTING);
-    //glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
     glEnable(GL_DEPTH_TEST);
     
 }
@@ -365,7 +370,10 @@ void myReshape(int w, int h) {
     glViewport (0,0,viewport.w,viewport.h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(-10, 10, -10, 10, 10, -10);
+    
+
+    
+    glOrtho(-6, 6, -6, 6, 6, -6);
     
 }
 
@@ -376,64 +384,58 @@ void myDisplay() {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     
-    gluLookAt(-1, 0, 1,  //look from -1, 0, 1 (along z axis and with an x offset to see the cloth not strictly vertical)
+    gluLookAt(0.5+translateX, 0+translateY, 1,  //look from -1, 0, 1 (along z axis and with an x offset to see the cloth not strictly vertical)
               0, 0, 0,  //look at origin
               0, 1, 0); //y up vector
-
-
-
     
-    //***************************************************//
-    //ALEX HERE IS SOME PSEUDOCODE!!!!! evalforce is working with just applying gravity, run the program here and the cloth should move along the screen, constraints/collision not implemented but ordering is added
-    //simulate cloth movement according to force, constraint, and collision
-    //timedelay makes the animation go slower for bug fixes, etc., timeEnd indicates when we want the simulation to end and the cloth to stop moving
+    
     if (elapsedTime < timeEnd) {
         glColor3f(0.0f, 0.0f, 1.0f);
-        glutSolidSphere(radius, 25, 25); //sphere with center at origin, radius 1
+        glutSolidSphere(radius, 25, 25); //sphere with center at origin, radius defined at top
         drawcloth();
-
-        if (timedelay%10==0) {
-
-            //TODO AFTER evalForce, evalConstraints, and sphereCollision loops working -- loop over following three loops if the constraints aren't satisfied
-            //for all constraints -- if one isn't satisfied, keep looping
-            
-            /*
-            //EVAL FORCE LOOP
-            for (int x=0; x<particleSide; x++) {
-                for (int y=0; y<particleSide; y++) {
-                    particleVector[x][y].evalForce(gravity); //evalForce first on particles and change positions
+        
+        
+            int j = 0;
+            while (j<50) {
+                
+                for (int x=0; x<particleSide; x++) {
+                    for (int y=0; y<particleSide; y++) {
+                        particleVector[x][y].sphereCollision(); //check if particle collides with sphere and if so, change pos
+                    }
                 }
-            }*/
-	    glm::vec3 testForce(1,0,0);
-            particleVector[0][0].evalForce(testForce);
-            //EVAL CONSTRAINTS LOOP
-            for (int j=0; j<10; j++) {
-            	for (int i=0; i<constraintVector.size(); i++) {
-                	    constraintVector[i].evalConstraint(); //eval each Constraint in constraintVector
-            	}
-	    }
-            //need to check if any constraints aren't satisfied. Using a depth limit for now
-	    
-            //CHECK SPHERE COLLISION LOOP
-            
-            for (int x=0; x<particleSide; x++) {
-                for (int y=0; y<particleSide; y++) {
-                    particleVector[x][y].sphereCollision(); //check if particle collides with sphere and if so, change pos
+                
+                if (collision == true) {
+                    for (int i=0; i<constraintVector.size(); i++) {
+                        constraintVector[i].evalConstraint(); //eval each Constraint in constraintVector if collision occurs
+                    }
+                    collision = false;
                 }
+            
+                
+                if (constraintsSatisfied()) {
+                    break;
+                }
+                j++;
+                
             }
-            
-            
+                for (int x=0; x<particleSide; x++) {
+                    for (int y=0; y<particleSide; y++) {
+                        particleVector[x][y].evalForce(gravity); //evalForce on particles and change positions
+                    }
+                }
+        
+                for (int x=0; x<particleSide; x++) {
+                    for (int y=0; y<particleSide; y++) {
+                        particleVector[x][y].sphereCollision(); //check if particle collides with sphere and if so, change pos
+                    }
+                }
+    
             elapsedTime++;
-            timedelay++;
-
-        } else {
-            timedelay++;
-        }
+        
     }
     
-    //***************************************************//
-
-
+    
+    
     //Pushing the translate for the sphere onto the matrix:
     glPushMatrix();
     glTranslatef(translateX, translateY, 0.0f);
@@ -447,9 +449,9 @@ void myDisplay() {
     
     glFlush();
     glutSwapBuffers();
-
-
-
+    
+    
+    
     
 }
 
@@ -495,12 +497,13 @@ int main(int argc, char *argv[])
 	ParticleSystem cloth;
 	cloth = initializeVerticalCloth();
 	cloth.initializeConstraints();
+    
 	//timeloop
 	//evalforce
 	//for #of evals:
     //eval
     //spherecollision
-
+    
     
     //CREATE WINDOW AND DRAW SCENE
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -517,9 +520,9 @@ int main(int argc, char *argv[])
     glutReshapeFunc(myReshape);
     glutKeyboardFunc(idleInput);
     glutSpecialFunc(specialKeyFunc);
-
+    
     glutMainLoop();
-
+    
     
 	
 	return 1;
