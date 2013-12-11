@@ -77,6 +77,7 @@ void Particle::evalForce(glm::vec3 force)
 
 void Particle::sphereCollision () {
  //if distance from point to origin of sphere less than radius 2
+    std::cout << 
     if (sqrt( pow(pos.x, 2) + pow(pos.y, 2) + pow(pos.z, 2) ) < radius) {
         pos = glm::normalize(pos) * radius; //push position to surface of sphere (if change radius, change 2 to new radius value here)
 	std::cout << pos.x << " " << pos.y << " " << pos.z << std::endl;
