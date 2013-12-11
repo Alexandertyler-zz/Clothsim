@@ -29,6 +29,8 @@ float radius = 1;
 
 bool collision = false;
 
+bool beginSimulation = false;
+
 //The translation variables : used to translate the sphere
 float translateX = 0;
 float translateY = 0;
@@ -198,7 +200,7 @@ ParticleSystem initializeVerticalCloth(){
 			//initialize a new particle and add it to the vector
 			
             //changed to have x axis not change -- vertical to viewer now and offset by 4 since sphere is at origin
-			glm::vec3 particlePos = glm::vec3(-5,
+			glm::vec3 particlePos = glm::vec3(-4,
                                               (-clothSide/((float) (particleSide - 1)) * y)+clothSide/2,
                                               (clothSide/((float) (particleSide - 1)) * x)-clothSide/2);
             
@@ -392,7 +394,9 @@ void myDisplay() {
     if (elapsedTime < timeEnd) {
         glColor3f(0.0f, 0.0f, 1.0f);
         glutSolidSphere(radius-.1, 25, 25); //sphere with center at origin, radius defined at top
-        drawcloth();
+	//glutSolidSphere(radius-.1, 0, 0);        
+	drawcloth();
+	if(beginSimulation) {
         
         
             int j = 0;
@@ -431,7 +435,7 @@ void myDisplay() {
                 }
     
             elapsedTime++;
-        
+        }
     }
     
     
@@ -462,6 +466,8 @@ void idleInput (unsigned char key, int xmouse, int ymouse) {
     {
         case ' ':
             exit(0);
+	case 's':
+	    beginSimulation = !beginSimulation;
         default:
             break;
     }
