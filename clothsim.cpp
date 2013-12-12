@@ -35,8 +35,10 @@ float sphereTranslation = 2.0f; //sphere offset from origin
 
 //********************//
 //OPTIONS FOR SIMULATION
-bool fixedClothPoints = false; //right now if true, two fixed points
-int numSpheres = 3; //can only do 3 or less spheres
+bool stripes = false; //if not stripes - does the triangle pattern
+bool fixedBackClothPoints = false; //if true, fix back points to see bending and shearing in back
+bool fixedSideClothPoints = false; //if true, fix right side so see side view
+int numSpheres = 1; //can only do 3 or less spheres
 //********************//
 
 
@@ -234,12 +236,15 @@ ParticleSystem initializeVerticalCloth(){
 		}
         
 	}
-    if (fixedClothPoints) {
+    if (fixedBackClothPoints) {
         //cloth particles to freeze -- use endpoints
         particleVector[particleSide-1][particleSide-1].freezeParticle();
         particleVector[particleSide-1][0].freezeParticle();
     }
-
+    if (fixedSideClothPoints) {
+        particleVector[particleSide-1][0].freezeParticle();
+        particleVector[0][0].freezeParticle();
+    }
 }
 
 ParticleSystem initializeHorizCloth(){
@@ -339,22 +344,33 @@ void drawcloth() {
     glBegin(GL_TRIANGLES);
     glm::vec3 triNormal;
     
+    //reset normals
+    for (int x = 0; x<particleSide-1; x++) {
+    	for (int y = 0; y<particleSide-1; y++) {
+            //particleVector[x+1][y].normal = glm::vec3(0,0,0);
+            //particleVector[x][y+1].normal = glm::vec3(0,0,0);
+            particleVector[x][y].normal = glm::vec3(0,0,0);
+            //particleVector[x+1][y+1].normal = glm::vec3(0,0,0);
+        }
+    }
+    
+    
     //calculate normals
     for (int x = 0; x<particleSide-1; x++) {
     	for (int y = 0; y<particleSide-1; y++) {
-            triNormal = getTriangleNormal(particleVector[x+1][y], particleVector[x][y], particleVector[x][y+1]);
+            triNormal = getTriangleNormal(particleVector[x+1][y], particleVector[x][y+1], particleVector[x][y]);
     
             //ADD NORMALS TO INDIVIDUAL PARTICLES FOR FIRST TRIANGLE
             particleVector[x+1][y].normal += glm::normalize(triNormal);
-            particleVector[x][y].normal += glm::normalize(triNormal);
             particleVector[x][y+1].normal += glm::normalize(triNormal);
+            particleVector[x][y].normal += glm::normalize(triNormal);
             
-            triNormal = getTriangleNormal(particleVector[x+1][y], particleVector[x][y+1], particleVector[x+1][y+1]);
+            triNormal = getTriangleNormal(particleVector[x+1][y], particleVector[x+1][y+1], particleVector[x][y+1]);
             
             //ADD NORMALS TO INDIVIDUAL PARTICLES FOR SECOND TRIANGLE
             particleVector[x+1][y].normal += glm::normalize(triNormal);
-            particleVector[x][y+1].normal += glm::normalize(triNormal);
             particleVector[x+1][y+1].normal += glm::normalize(triNormal);
+            particleVector[x][y+1].normal += glm::normalize(triNormal);
         }
     }
     
@@ -362,37 +378,50 @@ void drawcloth() {
     for (int x = 0; x<particleSide-1; x++) {
     	for (int y = 0; y<particleSide-1; y++) {
             
-            glColor3f(1.0f, 0.0f, 1.0f);
+            if (stripes) {
+                if(x%5==0){
+                    glColor3f(1.0f, 0.0f, 1.0f);
+                } else {
+                    glColor3f(1.0f, 1.0f, 0.0f);
+                }
+            } else {
+                glColor3f(1.0f, 0.0f, 1.0f);
+            }
             //first triangle in square
             glm::normalize(particleVector[x+1][y].normal);
-            glm::normalize(particleVector[x][y].normal);
             glm::normalize(particleVector[x][y+1].normal);
+            glm::normalize(particleVector[x][y].normal);
             
             glNormal3f(particleVector[x+1][y].normal.x, particleVector[x+1][y].normal.y, particleVector[x+1][y].normal.z); //shading
             glVertex3f(particleVector[x+1][y].pos.x, particleVector[x+1][y].pos.y, particleVector[x+1][y].pos.z);
+            glNormal3f(particleVector[x][y+1].normal.x, particleVector[x][y+1].normal.y, particleVector[x][y+1].normal.z); //shading
+            glVertex3f(particleVector[x][y+1].pos.x, particleVector[x][y+1].pos.y, particleVector[x][y+1].pos.z);
             glNormal3f(particleVector[x][y].normal.x, particleVector[x][y].normal.y, particleVector[x][y].normal.z); //shading
             glVertex3f(particleVector[x][y].pos.x, particleVector[x][y].pos.y, particleVector[x][y].pos.z);
-            glNormal3f(particleVector[x][y+1].normal.x, particleVector[x][y+1].normal.y, particleVector[x][y+1].normal.z); //shading
-            glVertex3f(particleVector[x][y+1].pos.x, particleVector[x][y+1].pos.y, particleVector[x][y+1].pos.z);
             
-            
-            
-            glColor3f(1.0f, 1.0f, 0.0f);
+            if (stripes) {
+                if(x%5==0){
+                    glColor3f(1.0f, 0.0f, 1.0f);
+                } else {
+                    glColor3f(1.0f, 1.0f, 0.0f);
+                }
+            } else {
+                glColor3f(1.0f, 1.0f, 0.0f);
+            }
             //second triangle in square
             glm::normalize(particleVector[x+1][y].normal);
-            glm::normalize(particleVector[x][y+1].normal);
             glm::normalize(particleVector[x+1][y+1].normal);
+            glm::normalize(particleVector[x][y+1].normal);
             
             glNormal3f(particleVector[x+1][y].normal.x, particleVector[x+1][y].normal.y, particleVector[x+1][y].normal.z); //shading
             glVertex3f(particleVector[x+1][y].pos.x, particleVector[x+1][y].pos.y, particleVector[x+1][y].pos.z);
-            glNormal3f(particleVector[x][y+1].normal.x, particleVector[x][y+1].normal.y, particleVector[x][y+1].normal.z); //shading
-            glVertex3f(particleVector[x][y+1].pos.x, particleVector[x][y+1].pos.y, particleVector[x][y+1].pos.z);
             glNormal3f(particleVector[x+1][y+1].normal.x, particleVector[x+1][y+1].normal.y, particleVector[x+1][y+1].normal.z); //shading
             glVertex3f(particleVector[x+1][y+1].pos.x, particleVector[x+1][y+1].pos.y, particleVector[x+1][y+1].pos.z);
-            
+            glNormal3f(particleVector[x][y+1].normal.x, particleVector[x][y+1].normal.y, particleVector[x][y+1].normal.z); //shading
+            glVertex3f(particleVector[x][y+1].pos.x, particleVector[x][y+1].pos.y, particleVector[x][y+1].pos.z);
+
         }
     }
-    
     glEnd();
     
 }
@@ -415,7 +444,7 @@ void initScene(){
     GLfloat specular[] = {0.5, 0.5, 0.5, 0.0};
     //GLfloat diffuse[] = {0.5, 0.5, 0.5, 0.15};
     
-    GLfloat position[] = { 0.0, -6.0, 6.0, 0.0 };
+    GLfloat position[] = { -6.0, -6.0, 6.0, 0.0 };
     
     glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
     glLightfv(GL_LIGHT0, GL_POSITION, position);
@@ -494,7 +523,7 @@ void myDisplay() {
                     }
                 }
                 
-                if (collision == true || fixedClothPoints == true) {
+                if (collision == true || fixedBackClothPoints == true || fixedSideClothPoints == true) {
                     for (int i=0; i<constraintVector.size(); i++) {
                         constraintVector[i].evalConstraint(); //eval each Constraint in constraintVector if collision occurs
                     }
