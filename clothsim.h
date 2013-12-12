@@ -29,7 +29,7 @@ public:
 	//fields:
 	bool canMove;
 	float mass;
-	glm::vec3  pos, oldPos, vel, accel;
+	glm::vec3  pos, oldPos, vel, accel, normal;
 	//Constructors:
 	Particle();
 	Particle(glm::vec3 _pos);
@@ -76,9 +76,6 @@ public:
 	//Functions:
 	//void setConstraint(Particle part1, Particle part2);
 	void evalConstraint();
-    
-	
-//private:
 	float structDistance; //the default resting distance between two particles
 	
 };
