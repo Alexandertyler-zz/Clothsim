@@ -17,19 +17,19 @@ int numParticles = particleSide*particleSide;
 float clothSide = 10.0f;
 
 //The gravity vector
-glm::vec3 gravity(.1, 0, 0);
-
+glm::vec3 gravity(0, -0.1, 0);
 
 float damp = .1f;
 float timeStep = 1;//changes how fast and far the cloth moves by increasing acceleration
 int elapsedTime = 0;
-int timeEnd = 220;
+int timeEnd = 240;
 int timedelay = 0;
 float radius = 1;
 bool collision = false;
 bool beginSimulation = false;
 bool wireframe = false; //change by pressing 'w' during simulation
 float sphereTranslation = 2.0f; //sphere offset from origin
+float distAwayFromSpheres = 4;
 
 
 
@@ -42,9 +42,9 @@ int numSpheres = 1; //can only do 3 or less spheres
 //********************//
 
 
-//The translation variables : used to translate the sphere
-float translateX = 0;
-float translateY = 0;
+//The rotation variables : used to rotate the sphere
+float rotateX = 0;
+float rotateY = 0;
 
 std::vector<std::vector<Particle> > particleVector(particleSide);
 std::vector<Constraint> constraintVector;
@@ -106,14 +106,14 @@ void Particle::sphereCollision () {
             offset = 1;
         }
         
-        origin = origin + (glm::vec3(0, sphereTranslation*offset, 0));// * glm::vec3(i, i, i));
+        origin = origin + (glm::vec3(0, 0, sphereTranslation*offset));// * glm::vec3(i, i, i));
         float dist = glm::length(pos-origin);
         if (dist < radius-0.00001) {
                 
             collision = true;
-            glm::vec3 posForNorm = (pos-(glm::vec3(0, sphereTranslation*offset, 0)));//take pos in relation to origin at (0,0,0) to use glm::normalize
+            glm::vec3 posForNorm = (pos-(glm::vec3(0, 0, sphereTranslation*offset)));//take pos in relation to origin at (0,0,0) to use glm::normalize
             pos = (glm::normalize(posForNorm) * (radius+0.01f)); //push position to surface of sphere + a small number so it's not directly on surface for rendering
-            pos = pos + (glm::vec3(0, sphereTranslation*offset, 0));//re-offset so pos is set back in relation to own sphere's origin
+            pos = pos + (glm::vec3(0, 0, sphereTranslation*offset));//re-offset so pos is set back in relation to own sphere's origin
         }
     }
 
@@ -225,9 +225,10 @@ ParticleSystem initializeVerticalCloth(){
 		for (int x = 0; x < particleSide; x++) {
 			//initialize a new particle and add it to the vector
 			
-			glm::vec3 particlePos = glm::vec3(-4,
-                                              (-clothSide/((float) (particleSide - 1)) * y)+clothSide/2,
-                                              (clothSide/((float) (particleSide - 1)) * x)-clothSide/2);
+			glm::vec3 particlePos = glm::vec3(
+                                              (clothSide/((float) (particleSide - 1)) * x)-clothSide/2,
+                                                distAwayFromSpheres,
+                                              (-clothSide/((float) (particleSide - 1)) * y)+clothSide/2);
             
             
 			Particle currParticle(particlePos);
@@ -242,8 +243,8 @@ ParticleSystem initializeVerticalCloth(){
         particleVector[particleSide-1][0].freezeParticle();
     }
     if (fixedSideClothPoints) {
-        particleVector[particleSide-1][0].freezeParticle();
-        particleVector[0][0].freezeParticle();
+        particleVector[particleSide-1][particleSide-1].freezeParticle();
+        particleVector[0][particleSide-1].freezeParticle();
     }
 }
 
@@ -442,7 +443,7 @@ void initScene(){
     GLfloat ambient[] = { 0.3, 0.3, 0.3, 0.0 };
     glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
     GLfloat specular[] = {0.5, 0.5, 0.5, 0.0};
-    //GLfloat diffuse[] = {0.5, 0.5, 0.5, 0.15};
+    GLfloat diffuse[] = {0.5, 0.5, 0.5, 0.0};
     
     GLfloat position[] = { -6.0, -6.0, 6.0, 0.0 };
     
@@ -452,17 +453,16 @@ void initScene(){
     glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
     glLightfv(GL_LIGHT1, GL_POSITION, position);
 
-    //glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
-    //glLightfv(GL_LIGHT2, GL_POSITION, position);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
+    glLightfv(GL_LIGHT2, GL_POSITION, position);
     
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHT1);
-    //glEnable(GL_LIGHT2);
+    glEnable(GL_LIGHT2);
 
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_DEPTH_TEST);
-    
     glShadeModel (GL_SMOOTH);
     
 }
@@ -475,8 +475,6 @@ void myReshape(int w, int h) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     
-    
-    
     glOrtho(-6, 6, -6, 6, 6, -6);
     
 }
@@ -487,10 +485,14 @@ void myDisplay() {
     
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+
+    glPushMatrix();
+    glRotatef(rotateX, 0, 1, 0);
+    glRotatef(rotateY, 1, 0, 0);
     
-    gluLookAt(0.1+translateX, 0+translateY, 1,  //look from x, y, z (along z axis and with an x offset to see the cloth not strictly vertical)
+    gluLookAt(1, -0.1, -0.2,  //look from x, y, z (along z axis and with an x offset to see the cloth not strictly vertical)
               0, 0, 0,  //look at origin
-              0, 0, 1); //z up vector
+              0, 1, 0); //y up vector
     
     
     if (elapsedTime < timeEnd) {
@@ -504,7 +506,7 @@ void myDisplay() {
             } else if (i%2 != 0 && i!=0) {
                 offset = 1;
             }
-            glTranslatef(0.0f, sphereTranslation * offset, 0.0f);
+            glTranslatef(0.0f, 0.0f, sphereTranslation * offset);
             glutSolidSphere(radius-.1, 25, 25); //sphere with center at origin, radius defined at top
             glPopMatrix();
         }
@@ -554,8 +556,8 @@ void myDisplay() {
 
     
     //Pushing the translate for the sphere onto the matrix:
-    glPushMatrix();
-    glTranslatef(translateX, translateY, 0.0f);
+//    glPushMatrix();
+//    glTranslatef(translateX, translateY, 0.0f);
     
     glPopMatrix();
     
@@ -591,21 +593,21 @@ void idleInput (unsigned char key, int xmouse, int ymouse) {
     }
 }
 
-//The special keyboard functions to translate our ball
+//The special keyboard functions to rotate our ball
 void specialKeyFunc(int key, int x, int y) {
     
 	switch(key){
 		case GLUT_KEY_LEFT :
-			translateX -= 0.15f;
+			rotateX -= 15.0f;
 			break;
 		case GLUT_KEY_RIGHT :
-			translateX += 0.15f;
+			rotateX += 15.0f;
 			break;
 		case GLUT_KEY_UP :
-			translateY += 0.15f;
+			rotateY -= 15.0f;
 			break;
 		case GLUT_KEY_DOWN :
-			translateY -= 0.15f;
+			rotateY += 15.0f;
 			break;
 	}
     glutPostRedisplay();
@@ -621,7 +623,6 @@ int main(int argc, char *argv[])
 	ParticleSystem cloth;
 	cloth = initializeVerticalCloth();
 	cloth.initializeConstraints();
-    
     
     //CREATE WINDOW AND DRAW SCENE
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -641,7 +642,7 @@ int main(int argc, char *argv[])
     
     glutMainLoop();
     
-    
+
 	
 	return 1;
 }
