@@ -35,9 +35,9 @@ public:
 	Particle(glm::vec3 _pos);
 	//functions:
 	void evalForce(glm::vec3 force);
-    void changePos(glm::vec3 p);
-    void sphereCollision();
-    void freezeParticle();
+    	void changePos(glm::vec3 p);
+    	void sphereCollision();
+    	void freezeParticle();
     
 	
 };
@@ -69,7 +69,7 @@ class Constraint
 public:
 	//Fields:
 	Particle *part1, *part2;
-    std::string type;
+    	std::string type;
 	//Constructors:
 	Constraint();
 	Constraint(Particle* _part1, Particle* _part2, std::string type);
