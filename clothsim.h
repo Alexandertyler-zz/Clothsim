@@ -43,7 +43,6 @@ public:
 };
 
 /** Particle system, sets up system of particle linking. */
-//cloth
 
 class ParticleSystem
 {
@@ -60,7 +59,7 @@ public:
 
 class Sphere
 {
-	Sphere();
+    Sphere();
 };
 
 
@@ -70,9 +69,10 @@ class Constraint
 public:
 	//Fields:
 	Particle *part1, *part2;
+    std::string type;
 	//Constructors:
 	Constraint();
-	Constraint(Particle* _part1, Particle* _part2);
+	Constraint(Particle* _part1, Particle* _part2, std::string type);
 	//Functions:
 	//void setConstraint(Particle part1, Particle part2);
 	void evalConstraint();
